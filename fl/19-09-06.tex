@@ -1,0 +1,159 @@
+\documentclass[a4paper]{article}
+\usepackage{../flpack}
+
+\begin{document}
+
+\providecommand\fname{}
+\renewcommand\fname{19-09-06}
+
+\subsection{LTI-system}
+Ett vanligt sätt att karakterisera ett system är att ange dess utsignal
+för en given och känd insignal. För insignalen \(
+    x(t) = \delta(t)
+\) blir utsignalen \(
+    y(t) = h(t)
+\). Det kallas för systemets \emph{impulssvar}. Motsvarande samband gäller 
+för ett diskret system. Andra vanliga insignaler för att beskriva system är
+\begin{align*}
+    \text{In} &\implies \text{ut} \\
+    \text{Enhetssteg} &\implies \text{Stegsvar} \\
+    \text{Sinusformad signal med } \omega = \omega_0 &\implies \text{Frekvenssvar} 
+\end{align*}
+
+\subsection{Samband mellan insignal, utsignal och LTI-system (i tidsdomänen)}
+\subsubsection{Diskret fall}
+Anta att vi känner impulssvaret \(
+    h[n]
+\) till ett diskret LTI-system. 
+
+Låt \(
+    x[n]
+\) vara en godtycklig diskret signal. 
+
+Bilda \(
+    x[n] \cdot \delta[n] = x[0] \dot \delta[n]
+\) och därefter bilda \(
+    x[n]\cdot \delta[n-k] = x[k] \delta[n-k]
+\). Tydligen kan vi teckna \(
+    x[n]
+\) som en summa av viktade och skiftade enhetsimpulser.
+Alltså är \(
+    x[n] = \bs_{k = -\infty}^{\infty} x[k] \cdot \delta[n-k]
+\).
+
+För ett LTI-system gäller 
+\begin{align*}
+    \text{Insignal} &\implies \text{Utsignal} \\
+    \delta[n] &\implies h[n] \\
+    \delta[n-k] &\implies h[n-k] \\
+    x[k] \cdot \delta[n-k] &\implies x[k]h[n-k] \\
+    x[n] = \bs_{k = -\infty}^{\infty} x[k] \cdot \delta[n-k] &\implies y[n] = \bs_{k = -\infty}^{\infty} x[k] \cdot h[n-k]
+\end{align*}
+\(
+    y[n]
+\) ovan kallas för Faltningssumman. Förenklat skrivs \(
+    y[n] = x[n] * h[n]
+\). Med en variabelsubstitution kan man visa att \(
+    x[n] * h[n] = h[n] * x[n] \implies \bs_{k = -\infty}^{\infty} x[k] \cdot h[n-k] = \bs_{k = -\infty}^{\infty} h[k] \cdot x[n-k]
+\).
+
+\subsubsection{Kontinuerligt fall}
+Anta att vi känner impulssvaret \(
+    h(n)
+\) till ett kontinuerligt LTI-system. Låt också \(
+    x(t)
+\) vara en godtycklig (in)signal och låt \(
+    \hat{x}(t) 
+\) vara en approximation av \(
+    x(t)
+\) där \(
+    \hat{x}(t)
+\) är summan av pulserna \(
+    x_{-1}, x_0, x_1, \dots
+\) o.s.v.
+
+Vi definierar en enhetspuls som \(
+    \delta_\epsilon(t) = \inv{\epsilon} \text{ när } 0 \leq t < \epsilon \text{ och } 0 \text{ annars.} 
+\) 
+
+\f
+
+Våra pulser kan vi nu teckna som \(
+    \dots, x_{-1} = \delta_\epsilon(t+\epsilon)x(-\epsilon)\epsilon, 
+    x_0 = \delta_\epsilon(t)x(0)\epsilon,
+    x_1 = \delta_\epsilon(t-\epsilon)x(\epsilon)\epsilon, \dots
+\) och \(
+    \hat{x}(t) = \bs_{-\infty}^{\infty} \delta_\epsilon(t-k\epsilon)x(k\epsilon)\epsilon
+\). Låt \(
+    h_\epsilon(t) 
+\) vara systemets utsignal för insignalen \(
+    \delta_\epsilon(t)
+\) (pulssvar). För ett LTI-system gäller då \begin{align*}
+    \text{Insignal} &\implies \text{Utsignal} \\
+    \delta_\epsilon(t) &\implies h_\epsilon(t) \\
+    \delta_\epsilon(t-k\epsilon) &\implies h_\epsilon(t-k\epsilon) \\
+    \delta_\epsilon(t-k\epsilon)x(k\epsilon)\epsilon &\implies h_\epsilon(t-k\epsilon)x(k\epsilon)\epsilon \\
+    \sum_{k = -\infty}^{\infty} \delta_\epsilon(t-k\epsilon)x(k\epsilon)\epsilon = \hat{x}(t) &\implies \sum_{k = -\infty}^{\infty} h_\epsilon(t-k\epsilon)x(k\epsilon)\epsilon = \hat{y}(t)
+\end{align*}
+
+Låt \(
+    \epsilon \to 0
+\), då gäller \begin{align*}
+    \delta_\epsilon(t) &\to \delta(t) \\
+    h_\epsilon(t) &\to h(t) \\
+    k\epsilon &\to \tau \text{ (En kontinuerlig variabel)} 
+    \epsilon &\to \dd \tau \\
+    \sum &\to \int \\
+    \hat{x}(t) &\to x(t) \\
+    \hat{y}(t) &\to y(t) 
+\end{align*}
+
+Vi får då \[
+    y(t) = \int_{-\infty}^{\infty} h(t-\tau)x(\tau)\dd \tau
+\] vilket kallas faltningsintegralen. Förenklat skrivsätt är \(
+    y(t) = h(t) * x(t)
+\). Genom en variabelsubstitution kan man visa \(
+    h(t) * x(t) = x(t) * h(t)
+\), alltså att \(
+    \int_{-\infty}^{\infty} h(t-\tau)x(\tau)\dd \tau = \int_{-\infty}^{\infty} x(t-\tau)h(\tau)\dd \tau
+\) 
+
+\aquote{Det är backe upp här och backe ner där.}
+
+\subsection{Systemegenskaper kopplade till impulssvar}
+\subsubsection{Kausalt LTI-system}
+Diskret: \(
+    h[k] = 0 \text{ för } k < 0
+\) och därmed \(
+    y[n] = \bs_{k = 0}^{\infty} h[k]x[n-k]
+\). Motsvarande gäller för kontinuerliga system: \(
+    y(n) = \int_0^\infty h(\tau)x(t-\tau) \dd \tau
+\) 
+
+\subsubsection{Stabilt LTI-system}
+Diskret: Anta \(
+    \forall n: \abs{x[n]} \leq M_x < \infty
+\) d.v.s.\ att insignalen är begränsad. Utifrån det kan vi resonera att \(
+    \abs{y[n]} = \abs{\bs_{k = -\infty}^{\infty} h[k]x[n-k]}
+\) och eftersom \(
+    \abs{a+b} \leq \abs{a} + \abs{b}
+\) gäller \(
+    \abs{y[n]} \leq \bs_{k = -\infty}^{\infty} \abs{h[k]x[n-k]}
+\) och än en gång, eftersom \(
+    \abs{ab} = \abs{a}\cdot\abs{b}
+\) får vi \(
+    \abs{y[n]} \leq \bs_{k = -\infty}^{\infty} \abs{h[k]}\abs{x[n-k]}
+\) men eftersom \(
+    \abs{x[k]} \leq M_x
+\) vet vi att \(
+    \abs{y[n]} \leq M_x \bs_{k = -\infty}^{\infty} \abs{h[k]}
+\). Med kravet på stabila system att \(
+    \forall n: \abs{y[n]} < \infty 
+\) följer villkoret \(
+    \bs_{-\infty}^{\infty} \abs{h[k]} < \infty
+\). Det kallar man att impulssvaret är absolutsummerbart. 
+Samma gäller för kontinuerliga system, då får man villkoret \(
+    \int_{\infty}^\infty \abs{h(\tau)}\dd \tau < \infty
+\) och det kallas för att impulssvaret är absolutintegrerbart.
+
+\end{document}

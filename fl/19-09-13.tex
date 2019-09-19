@@ -1,0 +1,219 @@
+\documentclass[a4paper]{article}
+\usepackage{../flpack}
+
+\begin{document}
+
+\providecommand\fname{}
+\renewcommand\fname{19-09-13}
+
+\dquote{Det är ju helg snart, man får roa sig med något}{Mattesnubben om ingenstans deriverbara funktioner}
+\dquote{Då övergår vi till saltgruvorna då.}{Mattesnubben}
+\subsection{Exponentiella Fourierserier}
+Låt \(
+    f
+\) vara en \(
+    T
+\)-periodisk signal. 
+
+Vi kan skriva \(
+    f = \bs_{k = -\infty}^\infty c_k(f) e^{i k \oz t}
+\) eftersom 
+\begin{align*}
+    f &= \bif{a_0}{2} + \bs_{k=1}^\infty a_k \cos(k \oz t) + b_k \sin(k \oz t) \\
+      &= \bif{a_0}{2} \bs_{k=1}^\infty \left( \bif{a_k}{2} + \bif{b_k}{2i}  \right) e^{j k \oz t} + \left( \bif{a_k}{2} - \bif{b_k}{2i}  \right) e^{-j k \oz t} \\
+      &= c_0 \bs_{k=1}^\infty c_ke^{ik\oz t} + \bs_{k=-\infty} ^{-1} c_k e^{ik\oz t} \\
+      &= \bs_{k = -\infty}^\infty c_k(f) e^{i k \oz t}
+\end{align*}
+där \(
+    c_k = \bif{a_k}{2}  + \bif{b_k}{2i} = \dots \text{(se andras anteckningar)} 
+    = \inv{T} \bi_0^T f(t) e^{-jk\oz t} \dd t
+\).
+
+\begin{anm}
+    Går lätt att visa med definitionen av faltning att om en av insignalerna är periodiska är också utsignalen det.
+\end{anm}
+
+\begin{defn}[Laplace-/Fouriertransform]
+    \[
+        H(s) = \bi_{-\infty}^\infty h(u) e^{-su} \dd u
+    \] 
+    givet att \(
+        h
+    \) är stabil.
+\end{defn}
+
+Om \(
+    x = \bs_{k = -\infty}^\infty c_k e^{jk\oz t}
+\) är \(
+    h * x = \bs_{k = -\infty}^\infty c_k h * e^{jk\oz t}
+    = \bs_{k = -\infty}^\infty c_k H(jk\oz) e^{jk\oz t}
+\).
+
+\subsection{Faltningsekvationer (periodiska fallet)}
+Vi vill lösa \(
+    y = h * x
+\).
+
+Anta att \(
+    y, h
+\) är kända och att \(
+    y
+\) är periodisk. Då kan vi skriva \(
+    y = \bs_{k = -\infty}^\infty c_k(y) e^{jk\oz t}
+\).
+
+Vi vet då att \(
+    \bs_{k=-\infty}^\infty c_k(y) e^{jk\oz t} 
+    = \bs_{k=-\infty}^\infty c_k(x) H(jk\oz)e^{jk\oz t}
+\) vilket ger att \(
+    \forall k : c_k(y) = c_k(x) H(jk\oz) \iff \forall k : c_k(x) = c_k(y) \cdot \inv{H(jk\oz)}
+\)  
+
+\subsection{Faltning på kompakt form}
+\[
+    H = \abs{H}e^{i \angle H}
+\] 
+
+Om vi då har signalen \(
+    x = \bs c_k(x) \cos(k\oz t + \theta_k(x))
+\) är \(
+    h * x(t) = \bs_{k=0}^\infty c_k h * \left( \bif{e^{j(k\oz t + \theta_k(x))} + e^{-j(k\oz t + \theta_k(x))}}{2}  \right)
+    = \bs_{k=0}^\infty c_k\left( H(jk\oz) \bif{e^{j(k\oz t + \theta_k(x))}}{2} + H(-jk\oz) \bif{e^{-j(k\oz t + \theta_k(x))}}{2}  \right)
+\) 
+
+\begin{påst}
+    Om \(
+        h
+    \) är reell är \(
+        H(\overline{s}) = \overline{H(s)}
+    \).
+
+    \begin{proof}
+        \begin{align*}
+            H(\overline{s}) &= \bi_{-\infty}^\infty h(u) e^{-\overline{s}u} \dd u \\
+            &= \overline{ \bi_{-\infty}^\infty h(u) e^{-su} \dd u } \\
+            &= \overline(H(s))
+        \end{align*}
+    \end{proof}
+\end{påst}
+\begin{align*}
+    &\bs_{k=0}^\infty c_k\left( H(jk\oz) \bif{e^{j(k\oz t + \theta_k(x))}}{2} + H(-jk\oz) \bif{e^{-j(k\oz t + \theta_k(x))}}{2}  \right) \\
+    = &\bs_{k=0}^\infty c_k\left( H(jk\oz) \bif{e^{j(k\oz t + \theta_k(x))}}{2} + \overline{H(jk\oz)} \bif{e^{-j(k\oz t + \theta_k(x))}}{2}  \right) \\
+    = &\bs_{k=0}^\infty c_k \bif{\abs{H(jk\oz)}}{2} \left( e^{j\angle H(jk\oz)} e^{j(k\oz t + \theta_k)} + e^{-j\angle H(jk\oz)} e^{-j(k\oz t + \theta_k)} \right)  \\
+    = &\bs_{k=0}^\infty c_k \abs{H(jk\oz)} \cos(k\oz t + \theta_k + \angle H(jk\oz))
+\end{align*}
+
+\subsection{Derivata}
+Låt \(
+    x(t) = \bif{a_0}{2} + \bs_{k=1}^\infty a_k(x) \cos(k \oz t) + b_k(x) \sin(k \oz t)
+\). Då är \(
+    x'(t) = \bs_{k=1}^\infty a_k(x)(-k\oz)\sin(k \oz t) + b_k(x) (k\oz)\cos(k \oz t)
+\). \(
+    a_0(x') = 0, a_k(x') = k\oz b_k(x), b_k(x') = -k\oz a_k(x)
+\) för \(
+    k > 0
+\).
+
+\begin{ex}
+    Låt \(
+        h = ue^{at}
+    \) (enhetssteg), d.v.s.\ \(
+        h(t) = e^{at} 
+    \) för \(
+        t \geq 0
+    \) och \(
+        0
+    \) annars.
+
+    Låt också \(
+        x(t) = \cos(t) + \sin(2t) + \cos(3t - \frac{\pi}{3})
+        = \half e^{it} + \half e^{-it} + \bif{e^{it}}{2i} - \bif{e^{-it}}{2i}
+        + \half e^{3it} e^{-\frac{\pi}{3}} + \half e^{-3it} e^{\frac{\pi}{3}}
+        = c_{-3} e^{-3it} + c_{-2} e^{-2it} + c_{-1} e^{-it} + c_1 e^{it} + c_2 e^{it} + c_3 e^{3it}
+    \). Då är \(
+        c_{-3} = \bif{e^\frac{\pi i}{3} }{2}, 
+        c_{-2} = -\bif{1}{2i}
+        c_{-1} = \half , 
+        c_1 = \half,
+        c_2 = \bif{1}{2i}
+    \) och \(
+        c_3 = \bif{e^{-\frac{\pi i}{3}} }{2}
+    \).
+
+    Då är \(
+        h * x(t) =  \bs_{k=-\infty}^\infty c_k H(jk\oz) e^{ik\oz t}
+    \). \(
+        H(s) = \bi_0^\infty h(t) e^{-st} \dd t
+        = \bi_0^\infty e^{(a-s)t} \dd t
+        = \inv{s-a} \text{ när } \Re{s} > \Re{a} \text{ och odef.\ annars.}
+    \) \(
+        H 
+    \) är definierad, givet att \(
+        s = ik\oz
+    \) när \(
+        \Re{a} < 0
+    \), d.v.s.\ att \(
+        h
+    \) är stabil.
+
+    \(
+        H(jk\oz) = \bif{1}{ik\oz -a} 
+    \) vilket säger att \(
+        h * x(t) = \bs_{k=0}^\infty \bif{c_k}{ik\oz - a} e^{ik\oz t}
+    \). 
+
+    Med \(
+        x
+    \) som ovan blir \(
+        h*x(t) = \bs_{k=-3}^3 \bif{c_k}{ik\oz -a} e^{ik\oz t} 
+        = \bif{e^{\frac{\pi i}{3}}}{2} \inv{-3i\oz-a}e^{-3it} 
+        + \bif{1}{2i} \inv{-2i\oz-a}e^{-2it} + \cdots
+    \).
+
+    \(
+        D(h*x) = \bs c_k \cdot \bif{ik\oz }{ik\oz - a} e^{ik\oz t}
+        = \bs c_k e^{ik\oz t} + \bs c_k \cdot \bif{a}{ik\oz - a} e^{ik\oz t} 
+        = x + a (h * x)
+    \), d.v.s.\ \(
+        y=h*x 
+    \) löser \(
+        (D-a)y = x
+    \).
+\end{ex}
+
+\dquote{Riktigt jävla konkret.}{Mattesnubben}
+
+\subsection{Parsevals sats}
+Satsen säger saker om \(
+    \bi_0^T \abssq{x(t)} \dd t
+\). 
+
+\begin{påm}
+    \(
+        P_x = \blim_{R \to \infty} \inv{2R} \bi_{-R}^R \abssq{x(t)} \dd t
+        = \blim_{m \to \infty} \inv{2mT} \bi_{-mT}^{mT} \abssq{x(t)} \dd t
+        = \blim_{m \to \infty} \inv{2mT} \left( 2m \bi_{0}^{T} \abssq{x(t)} \dd t \right)
+        = \bif{1}{T} \bi_0^T \abssq{x(t)} \dd t
+    \)
+\end{påm}
+
+\(
+    x = \bs_{k=\infty}^\infty c_ke^{ik\oz t} \implies \bi_0^T \abssq{x(t)} \dd t 
+    = \abssq{x} = \lang x, x, \rang 
+    = \lang \bs_{k=-\infty}^\infty c_ke^{ik\oz t}, \bs_{l=-\infty}^\infty c_le^{il\oz t}\rang
+    = \bs_{k, l} \overline{c_k} c_l \lang e^{ik\oz t}, e^{il\oz t}\rang
+    = T \bs_{k = -\infty}^\infty \abssq{c_k} 
+    = \bi_0^T e^{-ik\oz t}e^{il\oz t} \dd t
+\) vilket är \(
+    0
+\) för \(
+    k\neq l
+\) och \(
+    1 \text{ annars.} 
+\) Sammanfattningsvis är satsen \[
+    P_x = \bs_{k=-\infty}^\infty \abssq{c_k} 
+    = \bif{\abssq{a_o}}{4} + \half \bs_{k=1}^\infty \abssq{a_n} + \abssq{b_n} 
+    = \abssq{c_0} + \half\bs_{k=1}^\infty \abssq{c_k} 
+\]
+
+\end{document}

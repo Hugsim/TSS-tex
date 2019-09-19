@@ -1,0 +1,311 @@
+\documentclass[a4paper]{article}
+\usepackage{../flpack}
+
+\begin{document}
+
+\providecommand\fname{}
+\renewcommand\fname{19-09-03}
+
+I kursen studerar vi tekniska/fysikaliska system och deras egenskaper. Vi kan 
+till exempel vara intresserade av hur de reagerar på olika exciteringar 
+(insignaler). Vi begränsar oss till system med en in- och en utsignal. 
+In- och utsignaler kan vara ex.\ kraft, tryck, spänning, ström o.s.v. 
+Vi använder oss av matematiska modeller för att beskriva signaler 
+(funktioner) och system (ekvationer). 
+
+\subsection{Klassificering av signaler}
+\subsubsection{Diskret/Kontinuerlig signal}
+Kontinuerlig (tid) signal \(
+    x(t) \text{ där } t \in \mathbb{R}
+\)
+
+Diskret (tid/oberoende variabel) signal \(
+    x[n] \text{ där } n \in \mathbb{Z}
+\) 
+
+Kontinuerlig amplitud \(
+    x(t), x[n] \in \mathbb{R}
+\) 
+
+Diskret amplitud \(
+    x(t), x[n] 
+\) kvantiserad
+
+Digital signal betecknar vanligen en signal som är diskret både i tid och 
+amplitud.
+
+\subsubsection{Jämn/Udda signal}
+Jämn signal \(
+    \forall t, x(t) = x(-t)
+\) kallas vanligtvis \(
+    x_e(t)
+\) 
+
+Udda signal \(
+    \forall t, x(t) = -x(-t)
+\) kallas vanligtvis \(
+    x_o(t)
+\) 
+
+\begin{thm}
+En godtycklig signal \(
+    x(t)
+\) kan alltid delas upp i en jämn signal \(
+    x_e(t)
+\) och en udda signal \(
+    x_o(t)
+\). Den jämna delen \(
+    x_e(t) = \half (x(t) + x(-t))
+\) och den udda delen \(
+    x_o(t) = \half (x(t) - x(-t))
+\) 
+\begin{proof}
+    \(
+        x_e(-t) = \half (x(-t) + x(t)) = x_e(t)
+    \) och \(
+        x_o(-t) = \half (x(-t) - x(t)) = - \half (x(t) - x(-t)) = - x_o(t)
+    \). Summan \(
+        x_e(t) + x_o(t) = \half (x(t) + x(-t) + x(t) - x(-t)) = x(t)
+    \).
+\end{proof}
+
+\end{thm}
+
+\subsubsection{Periodisk signal}
+Periodisk signal \(
+    \forall t, x(t) = x(t+T)
+\) där \(
+    T
+\) är en konstant period för signalen.
+
+Exempelvis sinusformad signal, fyrkantsvåg, triangelvåg o.s.v.
+
+Periodisk diskret signal \(
+    \forall n, x[n] = x[n+N] 
+\) där \(
+    N \in \mathbb{Z}^+ 
+\) och konstant.
+
+\subsubsection{Deterministisk (Känd, förutsägbar)/Slumpmässig (Stokastisk) signal}
+En signal kallas slumpmässig om den inte kan förutsägas helt.
+
+\begin{defn}[Energisignal]
+    Låt den totala energin vara \(
+        E = \blim_{T \to \infty} \bi_{-\frac{T}{2}}^{\frac{T}{2}} \abs{x(t)}^2 \dd t
+    \) alt.\ \(
+        E = \bs_{n=-\infty}^{\infty} \abs{x[n]}^2
+    \). Om \(
+        0 < E < \infty
+    \) är x en energisignal.
+\end{defn}
+
+\begin{defn}[Effektsignal]
+    Låt medeleffekten \(
+        P = \blim_{T \to \infty} \inv{T} \bi_{-\frac{T}{2}}^{\frac{T}{2}} \abs{x(t)}^2 \dd t
+    \) alt.\ \(
+        P = \blim_{T \to \infty} \inv{2N+1} \bs_{n=-\infty}^N \abs{x[n]}^2
+    \). Om \(
+        0 < P < \infty
+    \) är \(
+        x
+    \) en effektsignal.
+\end{defn}
+
+Notera att för en energisignal gäller \(
+    P \to 0
+\) eftersom \(
+    E < \infty
+\) och på samma sätt gäller att för en effektsignal går \(
+    E \to \infty 
+\). 
+
+\subsection{Signalmanipulering}
+\subsubsection{Amplitudskalning}
+\(
+    y[n] = ax[n]+b
+\) där vi exempelvis kan kalla \(
+    a
+\) för förstärkning och \(
+    b
+\) inom elektronik för DC-skift. \(
+    a, b
+\) är konstanter. På samma sätt för kontinuerliga signaler \(
+    y(t) = ax(t) + b
+\). 
+
+\subsubsection{Ändra tidsskala}
+\(
+    y(t) = x(at), a \in \realn
+\) och \(
+    y[n] = x[kn], k \in \intn
+\) 
+
+\subsubsection{Spegling}
+\(
+    \forall t, y(t) = x(-t)
+\) och \(
+    \forall n, y[n] = x[-n]
+\) 
+
+\subsubsection{(Tids)skift}
+\(
+    y(t) = x(t-t_0)
+\) och \(
+    y[n] = x[n-n_0]
+\) 
+
+\subsubsection{Samtida operationer}
+Låt \(
+    x(t)
+\) vara en signal.
+
+Ändra tidsskala så att \(
+    t \to at \implies x(at)
+\) sen en tidsskift \(
+    t \to t-t'_0 \implies x(a(t-t'_0)) = x(at-at'_0)
+\). Nu ändrar vi först tidsskift \(
+    t \to t-t_0 \implies x(t-t_0)
+\) och sen tidsskalan \(
+    t \to at \implies x(at-t_0)
+\). Notera att det är blir olika beroende på i vilken ordning det tas i.
+För att det ska vara lika måste \(
+    at'_0 = t_0
+\).
+
+\subsection{Signalmodeller}
+\subsubsection{Komplex exponential (kontinuerlig)}
+\(
+    x(t) = Ce^{at}
+\) där \(
+    C, a, x \in \compn
+\). Komplexa tal förekommer oftast inte i fysikaliska system men är mycket
+användbara som matematiska modeller. Den fysikaliska signalen kan fås
+ur \(
+    \Re{x(t)} \text{ eller } \Im{x(t)}
+\). Jämför \(
+    j\omega
+\)-metoden (phasors) för beräkning av stationära växelströmskretsar.
+
+\subsection{Lite repetition av komplexa tal}
+
+\(
+    \cos(\theta) = \bif{e^{\ji\theta} - e^{-\ji\theta}}{2} 
+\) och \(
+    \sin(\theta) = \bif{e^{\ji\theta} - e^{-\ji\theta}}{2j} 
+\).
+
+Tidsvariation \(
+    \theta = \omega t
+\) 
+
+\subsection{Några olika fall}
+\subsubsection{Fall 1}
+Anta \(
+    C, a \in realn
+\). Då är \(
+    x(t) = Ce^{at}
+\). För \(
+    a < 0 \text{ och } C > 0 
+\) beskriver \(
+    x
+\) ett exponentiellt avtagande förlopp.
+För \(
+    a > 0 
+\) beskriver \(
+    x
+\) ett exponentiellt stigande förlopp.
+Om \(
+    a = 0
+\) är \(
+    x(t) = C
+\).
+
+\subsubsection{Fall 2}
+\(
+    a, C \in \compn
+\) och \(
+    \Re{a} = 0
+\). Låt \(
+    a = \ji\omega_0
+\) och \(
+    C = A e^{\ji\Phi} (= A \angle \Phi)
+\). \(
+    x(t) = A e^{\ji\Phi} e^{j\omega_0t} = Ae^{j(\omega_0t+\Phi)} 
+    = A \cos(\omega_0t+\Phi) + \ji A \sin(\omega_0t+\Phi)
+\). \(
+    \Re{x(t)} 
+\) är sinusformad med amplitud \(
+    A
+\) och fasförskjutning \(
+    \Phi
+\). Det är en odämpad sinusformad signal.
+
+\subsubsection{Fall 3}
+\(
+    C, a \in \compn
+\). Låt \(
+    C = Ae^{\ji\Phi} \text{ och } a = \sigma_0 + \ji\omega
+\). Då är \(
+    x(t) = Ae^{\ji\Phi} e^{(\sigma_0+j\omega_0)t} 
+    = Ae^{\sigma_0t}e^{j(\omega_0t+\Phi)}
+    = A e^{\sigma_0t}\cos(\omega_0t+\Phi) + \ji Ae^{\sigma_0t}\sin(\omega_0t+\Phi)
+\). Om \(
+    \sigma_0 < 0 
+\) blir signalen en dämpad sinusformad signal. Om \(
+    \sigma_0 > 0
+\) blir signalen en anti-dämpad sinusformad signal. Om \(
+    \sigma_0 = 0
+\) är det bara fall 2 igen.
+
+\subsection{Diskret exponential}
+Låt \(
+    x[n] = C a^n
+\). Allmänt är \(
+    C, a, x \in \compn
+\) och \(
+    n \in \intn
+\).
+
+\subsubsection{Fall 1}
+\(
+    C, a \in \realn
+\). Då gäller \(
+    x[n] = C a^n
+\). För olika intervall ser graferna ut precis som man kan tänka sig.
+\(
+    a < 0
+\) gör att tecknet på \(
+    x[n]
+\) växlar och är negativt för udda \(
+    n
+\). 
+
+\subsubsection{Fall 2}
+\(
+    C, a \in \compn
+\) men \(
+    \abs{a} = 1
+\). Låt \(
+    a = e^{\ji\Omega_0} \text{ och } C = Ae^{\ji\Phi}
+\). Då är \(
+    A e^{\ji\Phi}e^{j\Omega_0n} = A e^{\ji(\Omega_0n+\Phi)} 
+    = A \cos(\Omega_0n+\Phi) + \ji A\sin(\Omega_0n+\Phi)
+\). \(
+    x[n]
+\) är då en diskret odämpad sinusformad signal. 
+
+\subsubsection{Fall 3}
+\(
+    C, a \in \compn
+\). Låt \(
+    C = Ae^{\ji \Phi}
+\) och \(
+    a = e^{\Sigma_0} e^{\ji\Omega_0} = e^{\Sigma_0+\ji\Omega_0}
+\). Då är \(
+    x[n] = Ae^{\ji\Phi}e^{(\Sigma_0+\ji\Omega_0)n} 
+    = A e^{\Sigma_0n} e^{\ji(\Sigma_0n+\Phi)}
+\). \(
+    \Sigma_0 
+\) bestämmer om signalen blir dämpad eller anti-dämpad.
+
+\end{document}

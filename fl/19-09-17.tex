@@ -1,0 +1,320 @@
+\documentclass[a4paper]{article}
+\usepackage{../flpack}
+
+\begin{document}
+
+\providecommand\fname{}
+\renewcommand\fname{19-09-17}
+
+\subsection{Diskret Fouriertransform}
+Idén för att göra den diskret är sampling. Det innebär att man väljer en 
+upplösning \(
+    N
+\) så att man tar värdet på funktionen i punkterna \(
+    0, \epsilon, 2\epsilon, \dots
+\) där \(
+    \epsilon = \bif{T}{N} 
+\). Alltså approximerar vi \(
+    f
+\) m.h.a.\ \(
+    f(\bif{kT}{N} )
+\) där \(
+    N
+\) går från \(
+    0
+\) till \(
+    N-1
+\).
+
+\begin{ansats}
+    \(
+        D[n] = \bif{1}{T} \bs_{k=0}^{N-1} \bi_\frac{kT}{N}^{\frac{k+1}{T} N} f\left(\frac{kT}{N}\right) e^{-i\oz n \frac{kT}{N}} \dd t
+        = \bif{1}{N} \bs_{k=0}^{N-1} f\left(\frac{kT}{N}\right) e^{-i \frac{2\pi}{N}kn}
+    \)  
+\end{ansats}
+
+\(
+    D_x[n] = \inv{N} \bs_{k=0}^{N-1} x[k] e^{-i \frac{2\pi}{N}kn}
+\) 
+
+\subsubsection{Syntes}
+\(
+    x[k] = \bs_{k=0}^{N-1} D_x[n] e^{i \frac{2\pi}{N}kn}
+\) 
+
+\dquote{Ni fnissar på tok för lite}{Mattesnubben om den k:te punkten}
+\dquote{Jag har approximerat allt med en konstant, så det är ganska grovt.}{Mattesnubben}
+
+Anledning till att det här gäller är följande:
+\paragraph{Steg 1}
+\(
+    1-z^{N} = (1-z)(1+z+z^2+\cdots + z^{N-1}) = 1+z+z^2+\cdots+z^{N-1}-z-z^2-\cdots-z^{N-1}-z^{N}
+\) 
+
+\paragraph{Steg 2}
+\(
+    z_k = e^{\frac{2\pi i}{N}k}
+\) uppfyller \(
+    z_k^N = 1
+\) 
+
+\paragraph{Steg 3}
+\(
+    1 + z_k + z_k^2 + \cdots \ z_k^{N-1}
+\) är antingen \(
+    N
+\) när \(
+    k = 0
+\) och \(
+    0
+\) annars.
+
+\(
+    HL = \bs_{n=0}{N-1} D_x[n] z_k^n = \inv{N}\bs_{n,l=0}^{N-1} x[l] z_{-l}^n z_k^n
+    = \inv{N}\bs_{l=0}^{N-1}\left(\bs_{n=0}^{N-1} x[l] z_{k-l}^n\right)
+    = \inv{N}\bs_{l=0}^{N-1}x[k] = x[k]
+\) 
+
+\subsection{Fouriertransformen}
+Här kollar vi på signaler \(
+    f(t), -\infty < t < \infty
+\).
+
+För \(
+    T >> t
+\) kan vi skriva \(
+    f(t) = \inv{2\pi}\bs_{k=-\infty}^\infty \bif{2\pi}{T} \left(\bi_{-\frac{T}{2} } ^{\frac{T}{2} } f(u) e^{-i \frac{2\pi k}{T}u} \dd u \right) e^{i \frac{2\pi k}{T}t}
+\) 
+
+\(
+    \omega = \bif{2\pi k}{T} 
+\) 
+
+\begin{defn}[Fouriertransformen]
+    \(
+        F(i\omega) = \bi_{-\infty}^{\infty} f(u) e^{j\omega u} \dd u
+    \) 
+\end{defn}
+
+\begin{sats}[Rekonstruktion av signal från Fourierserie]
+    \(
+        f(t) = \inv{2\pi}\bi_{-\infty}^\infty \bif{2\pi}{T} F(i\omega) e^{i j\omega t}
+    \) 
+\end{sats}
+
+Låt \(
+    y = h * x
+\) vara ett LTI-system. Då är \(
+    H(i\omega) 
+\) överföringsfunktionen och om vi tar \(
+    x(t) = e^{i\omega t}
+\) så är \(
+    y (t) = h * x(t) = \infint h(u) e^{i\omega (t-a)} \dd u 
+    = e^{i\omega t} \infint h(u) e^{-i\omega u} \dd u
+    = e^{i\omega t}H(i\omega)
+\). 
+
+När man tar \(
+    h * \cos(\omega t + \theta) = \abs{H(i \omega)} \cos(\omega t + \theta + \angle H(i\omega))
+\) 
+
+\dquote{Keepin' it real}{Mattesnubben om cosinus-funktioner}
+
+\begin{ex}
+    Låt \(
+        f_1(t) = e^{-at}u(t)
+    \) där \(
+        a > 0
+    \). Räkna ut \(
+        F_1(i\omega)
+    \).
+
+    \(
+        F_1(i\omega) = \infint e^{-at} u(t) e^{-i\omega t} \dd t 
+        = \infint e^{-(a+i\omega)t} \dd t
+        = \left[\bif{e^{-(a+i\omega)t}}{-(a+i\omega)} \right]_{t=0}^\infty 
+        = \inv{a+i\omega}
+    \).
+\end{ex}
+
+\begin{ex}
+    Låt \(
+        f_2(t) = e^{-a\abs{t}}
+    \). Räkna ut \(
+        F_2
+    \).
+
+    Notera att \(
+        f_2 = f_1(t) + f_1(-t)
+    \) där \(
+        f_1
+    \) kommer från förra exemplet.
+
+    Låt \(
+        f_{op}(t) = f(-t)
+    \). \(
+        F_{op}(\io) = \infint f(-t) e^{-\io t} \dd t
+        = (u = -t) = \infint f(u) e^{-i(-\omega u)} = F(-\io)
+    \). Alltså är \(
+        F_2(\io) = F_1(\io) + F_1(\io) = \inv{a+\io} + \inv{a-\io} = \bif{2a}{a^2+\omega^2} 
+    \) 
+\end{ex}
+
+\begin{sats}[Linearitet av Fouriertransformer]
+    Fouriertransformen är linjär, d.v.s.\ om \(
+        f = f_1 + \lambda \cdot f_2 
+    \) är \(
+        F = F_1 + \lambda \cdot F_2
+    \).
+
+    \begin{proof}
+        Visas lätt från definitionen av Fouriertransformen och faktumet att 
+        integrering är linjärt.
+    \end{proof}
+\end{sats}
+
+\subsection{\(
+    \delta(t)
+\) }
+
+\(
+    \infint \delta(t-a) x(t) \dd t = x(a)
+\) 
+
+Fouriertransformen av \(
+    \delta(t)
+\) är då \(
+    F(\io) = \infint \delta(t) e^{-\io t} \dd t
+    = e^{-\io a}
+\).
+
+\subsection{Transformpar}
+Ett transformpar är paret \(
+    (f(t), F(\io))
+\), d.v.s.\ \(
+    f(t)
+\) svarar mot \(
+    F(\io)
+\). Exempelvis svarar \(
+    e^{-at}u(t)
+\) mot \(
+    \inv{a+\io}
+\).
+
+\begin{ex}
+    Låt \(
+        f(t) = \bif{2a}{a^2+t^2} 
+    \). \(
+        F(t)
+    \) är då 
+    \begin{align*}
+        F(t) &= \infint \bif{2a}{a^2+t^2} e^{-\io t} \dd t \\
+        &= 2\pi \cdot \inv{2\pi} \infint \bif{2a}{a^2+t^2} e^{j(-\omega)t} \dd t\\
+        &= \text{ (via syntesformeln) } \\
+        &= 2\pi e^{-a\abs{-\omega}} \\
+        &= 2\pi e^{-a\abs{\omega}}.
+    \end{align*}
+\end{ex}
+
+\dquote{Lägg inte in någon magi i detta, bara lite fantasi.}{Mattesnubben}
+
+\begin{påst}
+    \(
+        (f(t), F(\io))
+    \) är ett transformpar \(
+        \iff (F(-it), 2\pi f(\omega))
+    \) är ett transformpar.
+\end{påst}
+
+\begin{ex}
+    \(
+        (\delta(t-a), e^{-\io a})
+    \) är ett transformpar.
+
+    Alltså är \(
+        (e^{ita}, 2\pi \cdot \delta(\omega-a))
+    \) ett transformpar.
+
+    En ren frekvens \(
+        a
+    \) ger en Fouriertransform som är \( 
+        \delta(t-a)
+    \).
+\end{ex}
+
+Följande gäller: \begin{align*}
+    \inv{2\pi} \infint F(\io) e^{\io t} \dd \omega
+    &= \inv{2\pi} \infint \infint F(u) e^{\io (u-t)} \dd u \dd \omega\\
+    &= \inv{2\pi} \infint f(u) \infint e^{\io u} e^{\io t} \dd \omega \dd u\\
+    &= \inv{2\pi} \infint f(u) 2\pi \delta(t-u) \dd u\\
+    &= f(t).
+\end{align*}
+
+\subsection{Periodisk återblick}
+Låt \(
+    x
+\) vara en \(
+    T
+\)-periodisk signal. Då vet vi att vi kan skriva \(
+    x(t) = \bs_{k=-\infty}^\infty c_k e^{\io_0 k t}
+\). Lineariteten av Fouriertransformen ger då \(
+    X(\io) = \bs_{k=-\infty}^\infty c_k \delta(\omega - k \omega_0)
+\).
+
+\subsection{Faltning}
+Låt \(
+    x_1, x_2
+\) vara signaler. Då är \(
+    x_1 * x_2 = \infint x_1(u) x_2(t-u) \dd u
+\). 
+
+\begin{påst}
+    \(
+        x_1 * x_2 
+    \) är ett transformpar med \(
+        X_1X_2
+    \).
+
+    \begin{ex}
+        Låt \(
+            x_1 = \delta(t-b), x_2 = \delta(t-a)
+        \). 
+        
+        Då är \(
+            x_1*x_2(t) = \infint \delta(u-b) \delta(t-u-a) \dd u
+            = \delta(t-b-a)
+        \).
+
+        Fouriertransformen av \(
+            x_1*x_2 = e^{-i(a+b)t} = e^{-iat} e^{ibt} = X_1(\io) X_2(\io)
+        \).
+    \end{ex}
+
+    \begin{proof}
+        \begin{align*}
+            \infint x_1*x_2 e^{-\io t} \dd t 
+            &= \infint \infint x_1(u) x_2(t-u) e^{-\io t} \dd u \dd t\\
+            &= \text{ (Variabelbyte där } v = t-u \text{) } \\
+            &= \infint \infint x_1(u) x_2(v) e^{-\io(v+u)} \dd u \dd v\\
+            &= \infint \infint x_1(u) e^{-\io u} x_2(v) e^{-\io v} \dd u \dd v\\
+            &= \infint x_1(u) e^{-\io u} \dd u \cdot \infint x_2(v) e^{-\io v} \dd v\\
+            &= X_1(\io) \cdot X_2(\io)
+        \end{align*}
+    \end{proof}
+\end{påst}
+
+\begin{påst}
+    \(
+        x_1(t)x_2(t) 
+    \) är ett transformpar med \(
+        2\pi X_1*X_2(-\io)
+    \). 
+\end{påst}
+
+\(
+    x(t)\delta(t-a) = x(a)\delta(t-a)
+\) ger att \(
+    H(\io) X(\io) = \bs_{k=-\infty}^\infty c_k H(\io_0 k) \delta(\omega - k\omega_0)
+\).
+
+\end{document}

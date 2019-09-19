@@ -1,0 +1,412 @@
+\documentclass[a4paper]{article}
+\usepackage{../flpack}
+
+\begin{document}
+
+\providecommand\fname{}
+\renewcommand\fname{19-09-18}
+
+\subsection{Egenskaper hos Fouriertransformen}
+\dquote{Det är naturligtvis lite mer delikat än så.}{Pokèmon \#109}
+
+Om \(
+    \infint \abs{f(t)} \dd t < \infty
+\) är alltid \(
+    F(\io) 
+\) kontinuerlig och \(
+    \lim_{\abs{\omega} \to \infty} F(\io) = 0
+\). 
+
+\begin{ex}
+    Om \(
+        f = \delta
+    \) saknar \(
+        \int \abs{f} \dd t 
+    \) mening. Trots det är \(
+        F(\io) = 1
+    \) kontinuerlig, men \(
+        \lim_{\abs{\omega} \to \infty} = 1 \neq 0
+    \). 
+\end{ex}
+
+\begin{ex}
+    \(
+        f(t) = e^{-\abs{a}t}
+    \) bildar transformpar med \(
+        F(\io) = \bif{2a}{a^2+\omega^2} 
+    \). 
+
+    \(
+        f(t) = e^{-at}u(t)
+    \) bildar transformpar med \(
+        F(\io) = \inv{a+\io}
+    \). 
+\end{ex}
+
+\subsection{Räkneregler för Fouriertransformen}
+\begin{sats}[Linearitet av Fouriertransformen]
+    Om \(
+        A f_1(t) + Bf_2(t)
+    \) är dess Fouriertransform \(
+        AF_1(\io) + B F_2(\io)
+    \).
+\end{sats}
+
+\begin{sats}[Tidsskalning Fouriertransform]
+    Om \(
+        f(at) 
+    \) när \(
+        a \neq 0
+    \) är dess Fouriertransform \(
+        \inv{\abs{a}} F(\frac{\io}{a})
+    \).
+
+    \begin{proof}
+        \(
+            \infint f(at) e^{-\io t} \dd t = \{u = at \implies \dd u = a \dd t\} 
+            = \inv{\abs{a}} \infint f(u) e^{-j\frac{\omega}{a}u} \dd u
+        \).
+    \end{proof}
+\end{sats}
+
+\begin{sats}[Tidsskifte Fouriertransform]
+    Om \(
+        f(t+a)
+    \) är dess Fouriertransform \(
+        e^{\io a} F(\io)
+    \).
+
+    \begin{proof}
+        \(
+            \infint f(t+a) e^{-\io t} \dd t = \{u = t+a\} 
+            = \infint f(u) e^{\io a} e^{-\io u} \dd u
+            = e^{\io a} F(\io)
+        \).
+    \end{proof}
+\end{sats}
+
+\begin{ex}
+    Låt \(
+        f_1(t) = 
+        \left\{\begin{matrix}
+            \inv{2a}, \abs{t} \leq a\\ 
+            0, \text{ annars} 
+        \end{matrix}\right.
+    \).
+
+    Då är \(
+        F_1(\io) = \infint f_1(t) e^{-\io t} \dd t 
+        = \inv{2a} \int_{-a}^a e^{-\io t} \dd t
+        = \inv{2a} = \left[\frac{e^{-\io t}}{-\io}\right]_{t=-a}^a
+        = \frac{ e^{\io a} - e^{-\io a} }{2i} \inv{\omega a} 
+        = \frac{\sin(\omega a)}{\omega a}
+    \).
+
+    Låt \(
+        x
+    \) vara en signal. Då är \(
+        f_1*x = \infint f_1(s) x(t-s) \dd s = \inv{2a} \int_{-a}^a x(t-s) \dd s
+    \) vilket är medelvärdet av \(
+        x(t)
+    \) i punkten \(
+        t
+    \) när man går \(
+        a 
+    \) steg till både höger och vänster. Inses rätt lätt om man ritar upp det.
+
+    \(
+        f_1*x 
+    \) bildat transformpar med \(
+        \frac{\sin(\omega a)}{\omega a} X(\io)
+    \).
+\end{ex}
+
+\begin{sats}[Derivata och Fouriertransform]
+    Om \(
+        f(t)
+    \) är en signal bildar \(
+        \dv{t} f(t)
+    \) ett transformpar med \(
+        \io F(\io)
+    \). 
+
+    \begin{proof}
+        \(
+            \infint \dv{t} f(t) e^{-\io t} \dd t
+            = 
+        \) (med partiell integration och antagandet att 
+        \(
+            f
+        \) går mot \(
+            0
+        \)  i oändligheten) \(
+            = - \infint f(t) \left(\dv{t} e^{-\io t}\right)\dd t
+            = \io \infint f(t) e^{-\io t} \dd t
+        \) 
+    \end{proof}
+\end{sats}
+
+\begin{ex}
+    Tillbaka till förra exemplet, vad är \(
+        f_1'
+    \)?
+
+    Jo, \(
+        f_1' 
+    \) kan definieras av att \(
+        \infint f'(t)x(t) \dd t = -\infint f_1(t) x'(t) \dd t
+        = -\inv{2a} \int_{-a}^a x'(t) \dd t 
+        = \inv{2a} (x(-a) - x(a)) 
+        = \infint \inv{2a} (\delta(t+a) - \delta(t-a)) x(t) \dd t
+    \). Alltså är \(
+        f_1' = \inv{2a} (\delta(t+a) - \delta(t-a))
+    \). 
+
+    Om man tittar på grafen för \(
+        f_1
+    \) kan man, om man tänker på vad derivatan måste vara i varje punkt,
+    se att detta är rimligt.
+
+    Vi vill kolla att detta stämmer. \(
+        f_1' = \inv{2a} (\delta(t+a) - \delta(t-a))
+    \) bildar transformpar med \(
+        \inv{2a} (e^{\io a} - e^{-\io a})
+        = \io \inv{2ia\omega} (e^{\io a} - e^{-\io a})
+        = \io \inv{a\omega} \sin(a\omega)
+        = \io F_1(\io)
+    \), vilket är rimligt med tanke på tidigare räkneregler.
+\end{ex}
+
+\begin{sats}[Fouriertransform för \(t \cdot f(t)\)]
+    Om vi har en signal \(
+        t\cdot f(t)
+    \) bildar det ett transformpar med \(
+        i \dv{\omega} F(\io)
+    \).
+
+    \begin{proof}
+        \(
+            \infint t\cdot f(t) e^{-\io t} \dd t 
+            = \infint f(t) t e^{-\io t} \dd t 
+            = \infint f(t) i \dv{\omega} e^{-\io t} \dd t
+            = i \infint f(t) \dv{\omega} e^{-\io t} \dd t
+            = i \dv{\omega} \infint f(t) e^{-\io t} \dd t
+        \).
+    \end{proof}
+\end{sats}
+
+\dquote{Låt oss vara lite casual}{Pokémon \#109 om räkneregler}
+
+VARNING: I boken skrivs \(
+    F(\omega)
+\) för Fouriertransformen i kapitel \(
+    < 6
+\) men \(
+    F(\io)
+\) i kapitel \(
+    \geq 6
+\).
+
+\begin{ex}
+    Låt \(
+        f_2(t) = e^{-at^2}, a > 0
+    \). Vad är Fouriertransformen \(
+        F_2
+    \)?
+
+    Vi ska ta en systemapproach istället för att göra jobbiga integraler.
+
+    \(
+        \dv{t} f_2(t) = -2t e^{-at^2} = -2atf_2(t)
+    \), d.v.s.\ \(
+             (\dv{t} + 2at)f_2(t) = 0 
+        \iff (\io + 2ai \dv{\omega})F_2 = 0
+        \iff (\dv{\omega} + \inv{2a} \omega) F_2 = 0
+        \iff F_2(\omega) = Ce^{-\frac{\omega^2}{4a}}
+        \implies C = F_2(\omega=0)\cdot e^{\frac{0^2}{4a}} 
+        = F_2(0)
+        = \infint e^{-at^2}\dd t
+        = \sqrt{\frac{\pi}{a}}
+    \). Alltså bildar \(
+        e^{-at^2}
+    \) transformpar med \(
+        \sqrt{\frac{\pi}{a}} e^{-\frac{\omega^2}{4a}}
+    \). 
+    \begin{anm}
+        \(
+            f_2
+        \) avtar superexponentiellt när \(
+            t \to \pm \infty
+        \), d.v.s. \(
+            f_2 
+        \) inte en lösning till en stabil LTI.
+    \end{anm}
+\end{ex}
+
+\dquote{Den går snabbare än örnen mot noll.}{Pokèmon \#109}
+
+Vad betyder egentligen \(
+    \dv{t}
+\)?
+
+Jo, \(
+    \dv{t} (h*x) = \dv{h}{t} * x = h * \dv{x}{t}
+\). \(
+    \dv{t}
+\) är också tidsinvariant, vilket betyder att det måste ges av någon faltning.
+Vad för \(
+    h
+\) uppfyller att \(
+    h * x ? \dv{t} x
+\)?
+
+\(
+    x(t) = \int x(u) \delta(t - u) \dd u = x * \delta(t) = \delta * x(t)
+\). Då är \(
+    \dv{t} x = \dv{t}(\delta * x) = (\dv{t} \delta) * x
+\). \(
+    \delta
+\) definieras av att \(
+        \infint \delta(t) x(t) \dd t = x(0)
+\), alltså måste \(
+    \infint \delta'(t)x(t) \dd t = - \infint \delta(t) x'(t) \dd t
+\) så att \(
+    \delta'
+\) definieras av \(
+    \infint \delta'(t) x(t) \dd t = - x'(0)
+\). Då är \(
+    \dv{t} x = \delta' * x
+\).
+
+\begin{sats}[Sambandet mellan \(\dv{t} \text{ och } \delta'\)]
+    \(
+        \dv{t} x = \delta' * x
+    \) 
+
+    \begin{proof}
+        Se ovan.
+    \end{proof}
+\end{sats}
+
+\begin{ex}
+    Vad är Fouriertransformen av \(
+        \delta'
+    \)?
+
+    \(
+        \infint \delta'(t) e^{-\io t} \dd t 
+        = \{ e^{-\io t} = x(t) \} 
+        = -x'(0) 
+        = -\io
+    \) 
+\end{ex}
+
+\begin{ex}
+    Skriv \(
+        (-\dv[2]{t} + a^2)y = x
+    \) som en LTI på formen \(
+        y = h*x
+    \).
+
+    \(
+        (-\dv[2]{t} + a^2)y 
+    \) bildar transformpar med \(
+        (-{(\io)}^2+a^2)Y = (\omega^2 + a^2)Y
+    \).
+
+    \(
+        (-\dv[2]{t} + a^2)y = x \iff (\omega^2 + a^2)Y = X
+        \iff Y = \inv{\omega^2+a^2}X
+        \iff y = h * x
+    \) för ett \(
+        h
+    \) s.a.\ \(
+        H(\io) = \inv{\omega^2+a^2}
+    \).
+
+    \(
+       e^{-at} 
+    \) har en Fouriertransform \(
+        \frac{2a}{a^2+\omega^2}
+    \), då har \(
+        h(t) = \inv{2a} e^{-at}
+    \) överföringsfunktion \(
+        H(\io) = \inv{a^2+\omega^2}
+    \). 
+
+    Då får vi från ursprungliga problemet \(
+        h * x(t) = y(t) = \inv{2a} \infint e^{-a\abs{t-u}}x(u)\dd u
+    \).
+\end{ex}
+
+\dquote{En pil säger mer än två ord i det här fallet}{Pokèmon \#109}
+
+\begin{sats}
+    Låt \(
+        f
+    \) vara en signal. Då har \(
+        \int_{-\infty}^t f(\tau) \dd \tau
+    \) Fouriertransform \(
+        \frac{F(\io)}{\io} + \pi F(0) \delta(\omega)
+    \). 
+
+    \begin{proof}
+        Idén bakom beviset är att \(
+            \int_{-\infty}^t f(\tau) \dd \tau 
+            = \infint f(\tau) u(t - \tau) \dd \tau
+            = f * u
+        \).
+
+        Eftersom \(
+            f * u 
+        \) bildar transformpar med \(
+            FU
+        \) vill vi visa att det är lika med \(
+            F(\io) \left( \inv{\io} + \pi \delta(\omega) \right)
+        \). Vi vill alltså att \(
+            U(\io) = \inv{\io} + \pi \delta(\omega)
+        \).
+
+        Eftersom \(
+            u' = \delta 
+        \) får vi att det bildar transformpar med \(
+            \io U(\io) = 1 \implies U(\io) = \inv{\io}
+        \).
+
+        Man får i någon mån halva bidraget från den konstanta funktionen \(
+            1
+        \), vilket är \(
+            2\pi\delta(\omega)
+        \), alltså får vi en faktor \(
+            \pi\delta(\omega)
+        \) i lösningen.
+    \end{proof}
+\end{sats}
+
+Om \(
+    \infint f(\tau) \dd \tau = 0
+\) måste \(
+    F(0) = 0
+\).
+
+\subsection{Plancherels sats}
+\begin{sats}
+    Låt \(
+        L^2(-\infty, \infty) = \{\text{ signaler } f \text{ med ändlig energi } \}
+    \) Kom ihåg att energin \(
+        E = \infint \abs{f(t)}^2 \dd t
+    \). Kom också ihåg \(
+        \lang f_1, f_2 \rang = \infint \overline{f_1(t)} f_2(t) \dd t
+    \). Då är, för \(
+        f_1, f_2 \in L^2(-\infty, \infty) 
+    \), både \(
+        F_1
+    \) och \(
+        F_2 \in L^2(-\infty, \infty) 
+    \). Vidare är \(
+        \infint \overline{f_1(t)} f_2(t) \dd t 
+        = \inv{2\pi} \infint \overline{f_1(t)} f_2(t) \dd t
+    \).
+\end{sats}
+
+\end{document}

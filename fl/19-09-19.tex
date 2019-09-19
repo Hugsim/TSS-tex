@@ -1,0 +1,107 @@
+\documentclass[a4paper]{article}
+\usepackage{../flpack}
+
+\begin{document}
+
+\providecommand\fname{}
+\renewcommand\fname{19-09-19}
+
+\subsection{Fourierserier och -transformer}
+\begin{påm}
+    Kom ihåg Eulers formel: \(
+        \cos(x) = \half (e^{ix} + e^{-ix})
+    \). Kom också ihåg den allmänna formeln: \(
+        x(t) = A \cos(\omega t + \theta)
+        = \frac{A}{2} \left( e^{i(\omega t + \theta)} + e^{-i(\omega t + \theta)} \right)
+        = \frac{A}{2} e^{i\theta} e^{i\omega t} + \frac{A}{2} e^{-i\theta} e^{-i\omega t}
+    \). Om \(
+        \omega = k \oz
+    \) kan vi skriva \(
+        x(t) = \frac{A}{2} e^{i\theta} e^{ik\oz t} + \frac{A}{2} e^{-i\theta} e^{-ik\oz t}
+    \) där vi ger namnen \(
+        c_k = \frac{A}{2} e^{i\theta}
+    \) och \(
+        c_{-k} = \frac{A}{2} e^{-i\theta}
+    \). Allmännt för en periodisk signal med flera sinsuformade signaler med \(
+        \omega = t\oz
+    \) får vi \(
+        x(t) = \sum_{k=-\infty}^\infty c_k e^{-ik\oz t}
+    \) vilket är Fourierserien på komplex form. \(
+        c_k
+    \) anger amplitud hos varje komplex exponential i formeln ovan.
+\end{påm}
+
+\(
+    c_k 
+\) och \(
+    X(\io)
+\) ger information om en signals frekvensinnehåll. Signalens amplitud fördelad
+över de olika frekvenserna är \(
+    \abs{c_k}
+\) eller \(
+    \abs{X(\io)}
+\) i det periodiska och icke-periodiska fallet. Vi kan från detta skapa 
+amplitudspektrum. Signalens fas fördelad över de olika frekvenserna är \(
+    \arg{c_k}
+\) och \(
+    \arg{X(\io)}
+\) för de två huvudfallen.
+
+Från Parsevals formel fås för en periodisk signal (effektsignal) den totala
+medeleffekten \(
+    \overline{P} = \inv{T} \int_T \abs{x(t)}^2 \dd t 
+    = c_0^2 + \sum_{k=1}^\infty 2 \abs{c_k}^2
+\) vilket kan kallas effekttäthetsspektrat. Den kan delas upp efter frekvens 
+om man vill. För en kontinuerlig signal (energisignal) definierar vi
+den totala energin \(
+    E = \infint \abs{x(t)}^2 \dd t 
+    = \inv{2\pi} \infint \abs{X(\io)}^2 \dd \omega
+\). Det är ett energi(täthets)spektrum och kan delas upp per frekvens.
+
+\subsection{Systemanalys}
+\(
+    y(t) = \infint h(\tau) x(t-\tau) \dd \tau
+\). Låt \(
+    x(t) = e^{\io t}
+\). Då är \(
+    y(t) = h(t) * x(t)
+    = \infint h(\tau) e^{\io (t-\tau)} \dd \tau
+    = \infint h(\tau) e^{\io t} e^{-\io \tau} \dd \tau
+    = e^{\io t} \infint h(\tau) e^{-\io \tau} \dd \tau
+    = e^{\io t} H(\io)
+\). 
+
+I vår Fourierserie ingår frekvenserna \(
+    k\oz, k \in \intn
+\). 
+
+\(
+    x_k(t) = e^{ik\oz t} \to y_k(t) = e^{ik\oz t} H(ik\oz)
+\) 
+
+\(
+    x_{-k}(t) = e^{-ik\oz t} \to y_{-k}(t) = e^{-ik\oz t} H(-ik\oz)
+\) 
+
+\(
+    x(t) = \half (x_k(t) + x_{-k} (t)) = \cos(k\oz t) 
+    \to y(t) = \half y_k(t) + \half y_{-k}(t)
+\). Låt \(
+    H(ik\oz) = H_k = \abs{H_k} e^{i\theta_k}\in \compn
+\). Då är \(
+    H(-ik\oz) = H_{-k} = \abs{H_k} e^{-i\theta_k}\in \compn
+\). Om man summerar (använder superposition) får man då \(
+    y(t) = \half \abs{H_k} \left( e^{ik\oz t} e^{i\theta_k} + e^{-ik\oz t} e^{i\theta_k} \right)
+    = \abs{H_k} \cos(k\oz t + \theta_k)
+\) vilket är den ursprungliga signalen med en amplitudpåverkan och en 
+faspåverkan. 
+
+\(
+    H_k = H(ik\oz) 
+\) är systemets \emph{frekvenssvar} (\(
+    H(\io)
+\)). Den ändrar amplitud och fas på varje sinusformad med frekvensen \(
+    \omega
+\).
+
+\end{document}

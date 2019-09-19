@@ -1,0 +1,254 @@
+\documentclass[a4paper]{article}
+\usepackage{../flpack}
+
+\begin{document}
+
+\providecommand\fname{}
+\renewcommand\fname{19-09-12}
+
+\subsection{Approximation av signaler}
+Låt \(
+    f
+\) vara en signal och \(
+    x
+\) vara en modellsignal som vi förstår. Vi vill modellera \(
+    f
+\) m.h.a.\ \(
+    x
+\), så ungefär \(
+    f \approx cx \implies \text{ Ett fel } e = f - cx
+\).
+
+Kom ihåg linalgens \enquote{inre produktrum}:
+
+\(
+    V
+\) är ett vektorrum över \(
+    \realn
+\)  eller \(
+    \compn
+\), \(
+    \lang \cdot, \cdot \rang 
+\), en inre/skalär produkt på \(
+    V
+\). Den uppfyller \(
+    \lang x, y \rang = \lang y, x\rang 
+\), \(
+    \lang x, x \rang \geq 0 (= 0 \iff x = 0)
+\) och \(
+    \lang x, \lambda y_1+y_2 \rang = \lang x, y_1 \rang \lambda + \lang x, y_2 \rang
+\).
+
+\(
+    f_1, f_2
+\) är signaler, då är här \(
+    \lang f_1, f_2 \rang = \bi_{-\infty}^\infty \bar{f_1(t)} f_2(t) \dd t
+\).
+
+I det periodiska fallet är \(
+    \lang f_1, f_2 \rang = \bi_0^T \bar{f_1(t)} f_2(t) \dd t
+\).
+
+Mellan två signaler \(
+    f_1, f_2
+\) har vi en vinkel \(
+    \theta
+\) som definieras genom \(
+    \cos(\theta) = \bif{\lang f_1, f_2 \rang}{\abs{f_1} \cdot \abs{f_2}} 
+\) där \(
+    \abs{f} = \sqrt{\lang f, f \rang}
+\).
+
+Felet \(
+    e
+\) är litet om \(
+    \abs{e}
+\) är litet. När är då \(
+    \abs{e}
+\) som minst? D.v.s.\ vad är \(
+    \min{\abs{f-cx}}
+\) över \(
+    \compn
+\)? Går att härleda att det uppnås för \(
+    c = \bif{\lang x, f \rang}{\abs{x}^2} 
+\). Det betyder att \(
+    f \approx \bif{\lang x, f \rang}{\abs{x}^2} x
+\).
+
+\dquote{Jag växte också upp på Lindholmen.}{Mattesnubben}
+
+Om \(
+    f
+\) är en signal definierad för \(
+    -\infty < t < \infty
+\) är dess energi \(
+    E_f = \bi_{-\infty}^{\infty} \abs{f(t)}^2 \dd t = \abs{f}^2
+\).
+
+Om \(
+    f_1, f_2
+\) är signaler definierade för \(
+    -\infty < t < \infty
+\) är \(
+    \bif{
+        \bi_{-\infty}{\infty} f_1(t) f_2(t) \dd t
+    }{\sqrt{E_{f_1}E_{f_2}}} = \bif{\lang f_1, f_2 \rang}{\abs{f_2}\abs{f_2}}  
+\) korrelationen mellan signalerna. Den är \(
+    1 \iff f_1 = f_2
+\) och \(
+    -1 \iff f_1 = -f_2
+\).
+
+Anta att vi har flera modellsignaler \(
+    x_1, x_2, \dots, x_N
+\) så att \(
+    f \approx c_1x_1 + c_2x_2 + \cdots + c_N x_N
+\). Vi vill då minimera \(
+    e = f - \bs_{n=1}^{N}c_k e_k
+\). Det uppnås för \(
+    c_k = \bif{\lang x_n, f\rang }{\abs{x_n}^2} 
+\) \textbf{OM} \(
+    x_1, x_2, \dots, x_n
+\) inte är korrelerade, d.v.s.\ de är ortogonala eller den inre/skalärprodukten är \(
+    0
+\).
+
+\subsection{Fourierserier}
+Fourierserier appliceras på periodiska signaler. Låt \(
+    f 
+\) vara en signal med period \(
+    T
+\). 
+
+Vi tittar på följande modellsignaler: \(
+    \{1, \cos(\omega_0 t ), \dots, \cos(N \omega_0 t), \sin(\omega_0 t ), \dots, \sin(N \omega_0 t)\}
+\).
+
+\(
+    \lang \cos(k \omega_0t), \cos(l \omega_0 t)\rang = \bi_0^T \cos(k \omega_0t) \cos(l \omega_0 t) \dd t 
+    = \bi_0^T \bif{e^{jk\omega_0t}+e^{-jk\omega_0t}}{2}  \bif{e^{jl\omega_0t}+e^{-jl\omega_0t}}{2} \dd t
+    = \bif{1}{4} \bi_0^T e^{j(k+l)\omega_0t} + e^{j(k-l)\omega_0t} +  e^{j(-k+l)\omega_0t} +  e^{-j(k+l)\omega_0t} \dd t
+    = T \text{ om } k = l = 0, \bif{T}{2} \text{ om } k = l > 0, 0 \text{ annars.} 
+\) På samma sätt är \(
+    \bi_0^T \cos(k \omega_0t) \sin(l \omega_0 t) \dd t = 0
+\) och \(
+    \bi_0^T \sin(k \omega_0t) \sin(l \omega_0 t) \dd t = \bif{T}{2} \text{ om } k = l \text{ och } 0 \text{ annars.} 
+\) 
+
+Alltså är den bästa approximationen \[
+    f \approx \bif{a_0}{2} + \bs_{k=1}^{N} a_k \cos(k\omega_0t)+ b_k \sin(k\omega_0t)
+\] där \(
+    a_k = \bif{2}{T} \bi_0^T f(t) \cos(k \omega_0 t)\dd t = \bif{\lang \cos(k \omega_0 t), f \rang}{\sqabs{\cos(k \omega_0t)}} 
+\) och \(
+    b_k = \bif{2}{T} \bi_0^T f(t) \sin(k \omega_0 t)\dd t = \bif{\lang \sin(k \omega_0 t), f \rang}{\sqabs{\sin(k \omega_0t)}}
+\).
+
+\begin{sats}
+    Om \(
+        f
+    \) är \(
+        T
+    \)-periodisk och \(
+        \bi_0^T \abs{f(t)} \dd t < \infty 
+    \) existerar \(
+        a_k
+    \) och \(
+        b_k
+    \).
+\end{sats}
+
+\begin{sats}
+    Om \(
+        f
+    \) dessutom är kontinuerlig på intervallet på \(
+        0 \leq t \leq T
+    \) utom i ändligt många punkter och \(
+        f(t+) = \blim_{h \to 0} f(t+h)
+    \) och \(
+        f(t-) = \blim_{h \to 0} f(t-h)
+    \) existerar för alla \(
+        t
+    \) så är \(
+        \bif{f(t+)+f(t-)}{2} = \blim_{N\to\infty} \bif{a_0}{2} + 
+        \bs_{k=1}^N a_k \cos(k \omega_0 t) + b_n \sin(k \omega_0 t)
+    \).
+\end{sats}
+
+\dquote{Det här är högst icke-trivialt.}{Mattesnubben}
+
+\dquote{Om man stoppar in något i datorn som itne konvergerar kommer det gå åt röven.}{Mattesnubben}
+
+\begin{ex}
+    \f
+
+    Vi har ju \(
+        f = \bif{a_0}{2} + \bs_{k=1}^N a_k \cos(k \omega_0 t) + b_n \sin(k \omega_0 t)
+    \), för \(k \geq 0 \text{ har vi } 
+        a_k = \bif{2}{T} \bi_0^T f(t) \cos(k \omega_0 t)\dd t = \bif{2}{T} \bi_0^{\frac{T}{2}} \cos(k \omega_0 t)\dd t = 
+        1 \text{ för } k = 0, 
+        \bif{2}{Tk\omega_0}[\sin(k\omega_0t)]_0^{\bif{T}{2}} 
+        = 1 \text{ för } k = 0, 0 \text{ annars.} 
+    \) och för \( k > 0 \text{ har vi } 
+        b_k = \bif{2}{T} \bi_0^T f(t) \sin(k \omega_0 t)\dd t = 
+        \bif{2}{T} \bi_0^{\frac{T}{2}} \sin(k \omega_0 t)\dd t =
+        \bif{2}{Tk\omega_0}[-\cos(k\omega_0t)]_0^{\frac{T}{2}} =
+        \bif{1}{\pi k} (-\cos(k\pi) + 1) =
+        \bif{1}{\pi k} (- (-1)^k + 1) =
+        0 \text{ för } k = 2m \text{ och } \bif{2}{\pi(2m+1)} \text{ annars.}  
+    \)
+
+    \(
+        f = \half + \bif{2}{\pi} \bs_{m=0}^\infty \bif{\sin((2m+1)\omega_0 t)}{\pi(2m+1)} 
+    \) 
+\end{ex}
+
+\subsubsection{Kompakt form}
+\begin{align*}
+    f &= \bif{a_0}{2} + \bs_{k=1}^\infty a_k \cos(k \oz t) + b_k \sin(k \oz t) \\
+      &= \bs_{n=0}^\infty c_n \cos(k \oz t + \theta_n)
+\end{align*}
+
+\(
+    c_n \cos(k \oz t + \theta_n) = c_n \cos(\theta_n) \cos(k \oz t) -  c_n \sin(\theta_n) \sin(k \oz t)
+\)    
+
+\(
+    \tan(\theta_n) = \bif{-b_n}{a_n} 
+\) och \(
+    c_n^2 = a_n^2 + b_n^2
+\) 
+
+\subsection{Frekvensspektrum}
+\f
+
+Används för att visualisera fourierserier.
+
+\begin{ex}
+    \f
+
+    \(
+        f = \bif{a_0}{2} + \bs_{k=1}^N a_k \cos(k \omega_0 t) + b_n \sin(k \omega_0 t)
+    \), och vi börjar med fallet där \(
+        k > 0
+    \). Då är \(
+        a_n = \bif{2}{T} \bi_0^{\frac{T}{2}} t \cos(k \oz t) \dd t
+    \) och med partiell integrering får vi \(
+        a_n = \bif{2}{T} \left[t \bif{\sin(k \oz t)}{k\oz }  \right]_0^{\frac{T}{2}} - \bif{2}{T}  \bi_0^{\frac{T}{2}} \bif{\sin(k \oz t)}{k \oz} \dd t
+        = 0 + \bif{2}{T\oz^2k^2}\left[\cos(k\oz t)\right]_0^{\frac{T}{2}} 
+        = 0 \text{ när } k = 2m, \bif{-2}{\pi \oz(2m+1)^2} \text{ annars.}  
+    \) Vi har också \(
+        a_0 = \bif{2}{T} \bi_0^T f(t) \dd t = \bif{2}{T} \bi_0^{\frac{T}{2}} t \dd t = \bif{T}{2} 
+    \).
+
+    Om man räknar på \(
+        b_n
+    \) blir det likt, men till slut får vi \(
+        f = \bif{T}{4} + \bif{2}{\pi} \bs_{m=0}^\infty \bif{-\cos((2m+1)\oz t)}{\oz(2m+1)^2} + \bif{\sin((2m+1)\oz t)}{2m+1}
+    \) eller i kompakt form \(
+        \bs_{n=0}^\infty c_n \cos((2n+1) \oz t +\theta_n)
+    \) där \(
+        \theta_n = \arctan(\bif{-b_{2n+1}}{a_{2n+1}}) = \arctan(\oz(2n+1))
+    \).
+\end{ex}
+
+\end{document}

@@ -1,0 +1,321 @@
+\documentclass[a4paper]{article}
+\usepackage{../flpack}
+
+\begin{document}
+
+\providecommand\fname{}
+\renewcommand\fname{19-09-10}
+
+\subsection{Diff.\ ekvationer}
+Vi kommer att titta på (LTIC-)system som beskrivs med \(
+    Q(D)y = P(D)x
+\) eller \(
+    Q[E]y = P[E]x
+\) i det diskreta fallet där \(
+    D = \dv{t}
+\) och \(
+    Ef[k] = f[k+1]
+\). Systemen är kausala, d.v.s.\ alltid \(
+    = 0 \text{ för } t < 0 \text{ eller } k < 0
+\). Alltså har vi ett begynnelsetillstånd. Den allmänna lösningen är \(
+    y = y_0 + y_i
+\) där \(
+    y_0
+\) är zerostate och \(
+    y_i
+\) är zeroinput. Vanligtvis är \(
+    y_0 = h * x
+\), d.v.s.\ någon slags faltning. 
+
+Notation: \(
+    Q(D) = D^m + a_{m-1}D^{m-1}+\cdots+a_1D+a_0
+\) där \(
+    m = ord(Q)
+\) 
+
+\subsubsection{Kontinuerliga fallet}
+\(
+    Q(D)y = P(d)x
+\) och \(
+    y^{(k)}(0) 
+\) är givna för \(
+    k=0, \dots, \text{ord}(Q)-1 
+\).
+
+Först löser vi \(
+    Q(D)y_0 = P(D)f
+\) för \(
+    y^{(k)}(0) = 0
+\). Sedan löser vi \(
+    Q(D)y_i = 0
+\) givet \(
+    y_i^{(k)}(0) = y^{(k)}(0)
+\). Detta är partikulär- och homogenlösningar i \enquote{vanliga} termer.
+\(
+    y_0 = h*x
+\) där \(
+    h
+\) är impulssvaret.
+
+\begin{ex}
+    Anta \(
+        y' + ay = x
+    \), \(
+        y(0) = b
+    \), \(
+        Q(D) = D+a
+    \) och \(
+        P(D) = 1
+    \). 
+    
+    Eftersom systemet är tidsinvariant är \(
+        a
+    \) en konstant. Först löser vi \(
+        y'_0 +ay_0 = x
+    \) givet \(
+        y_0(0)= 0
+    \). Sedan komemr vi att lösa \(
+        y'_i +ay_i = 0
+    \) givet \(
+        y_i(0)= b
+    \). Vi använder integrerande faktor, d.v.s.\ \(
+        (e^gy)' = (y'+g'y)e^g
+    \) men eftersom vi vet\(
+        a
+    \) har vi \(
+        g' = a \implies g = at
+    \). Alltså är \(
+        e^{at}(y'_0+ay_0) = (e^{at}y_0)'
+    \) och därmed \(
+        (e^{at}y_0)' = xe^{at} \implies e^{at}y_0(t) = e^{a0}y_0(0) + \bi_0^t x(s)e^{as}\dd s 
+        = \bi_0^t x(s)e^{as}\dd s \implies y_0(t) = \bi_0^t x(s)e^{a(s-t)}\dd s
+        = \bi_0^t x(s)e^{-a(t-s)}\dd s = x * h_{-a}(t) 
+    \) där \(
+        h_{-a}(t) = e^{at}u(t)
+    \). Alltså \(
+        y_0 = x * h_{-a}(t)
+    \). Nu kollar vi om \(
+        y_0
+    \) är en lösning vårt inledande problem. Först kollar vi om \(
+        y_0(0) = 0
+    \) och det är fine eftersom det då blir en integral från \(
+        0 
+    \) till \(
+        0
+    \), vilket är \(
+        0
+    \). Nu kollar vi om \(
+        y'_0 + a y_0 = x
+    \). \(
+        y'_0 = x(t) e^{-a(t-t)} - a \bi_0^t x(s) e^{-a(t-s)}\dd s = x(t) - a y_0(t)
+    \) 
+
+
+    Nu löser vi för \(
+        y_i
+    \). \(
+        y'_i + a y_i = 0 \iff (e^{at} y_i) = 0 \iff e^{at}y_i(t) = y_i(0) = b
+        \iff y_i(t) = be^{-at}
+    \). 
+    
+    Alltså är \(
+        y(t) = be^{-at} + x * h_{-a}(t)
+    \) 
+\end{ex}
+
+\dquote{Det verkar trivialt att \(
+    t-t = 0
+\)  men det är det som räddar oss.}{Mattesnubben}
+
+\subsubsection{Stabilitet i kausala fall}
+Om \(
+    \bi_0^\infty \abs{h(t)} \dd t < \infty 
+\). \(
+    h(t) = h_{-a}(t) = e^{-at}u(t) 
+\). \(
+    \bi_0^\infty \abs{h(t)} \dd t = \bi_0^\infty e^{-\Re{a}t} 
+\) vilket är ändligt om \(
+    \Re{a} > 0
+\) och oändligt annars.
+
+\begin{ex}
+    Lös \(
+        y'' + a_1y' + a_0y = x
+    \) där \(
+        y(0)
+    \) och \(
+        y'(0)
+    \) givna. Vi vet att \(
+        P(D) = 1
+    \) och \(
+        Q(D) = D^2+a_1D+a_0
+    \).
+
+    Vi börjar med att lösa ekvationen \(
+        Q(\lambda) = \lambda^2+a_1\lambda+a_0 = 0
+    \). Lösningarna till \(
+        Q(\lambda) = 0 
+    \) är \(
+        \lambda_\pm = - \bif{a_1}{2} \pm \sqrt{\bif{a_1^2}{4} - a_0} \implies 
+        Q(\lambda) = (\lambda - \lambda_+)(\lambda-\lambda_-)
+    \). 
+
+    Några exempel, om \(
+        a_1 = 0
+    \) får vi \(
+        \lambda_\pm = \pm \sqrt{-a_0} \implies \lambda^2+a_0 = (\lambda - \sqrt{-a_0})(\lambda + \sqrt{-a_0})
+    \), om \(
+        a_0 = 0
+    \) får vi \(
+        \lambda_\pm = 0 
+    \) eller \(
+        -a_1 \implies \lambda(\lambda2+a_1)
+    \).
+
+    Vi börjar med att lösa zeroinput-lösningen. Observera att \(
+        D^n(e^{\lambda t}) = \lambda^n e^{\lambda t} \implies 
+        Q(D)e^{\lambda t} = Q(\lambda)e^{\lambda t} \implies
+        Q(D)(\mu_1 e^{\lambda_+ t} + \mu_2 e^{\lambda_- t}) = 0
+    \). Om \(
+        \lambda_+ \neq \lambda_-
+    \) hittar vi \(
+        y_i
+    \) genom ansatsen \(
+        y_i(t) = \mu_1 e^{\lambda_+ t} + \mu_2 e^{\lambda_- t}
+    \) så att \(
+        y_i(0) = \mu_1 + \mu_2
+    \) och \(
+        y'_i (0) = \mu_1\lambda_+ + \mu_2 \lambda_-
+    \).
+
+    Observera nu också att \(
+        Q(D)(te^{\lambda t}) = Q'(\lambda)e^{\lambda t} + Q(\lambda) te^{\lambda t}
+    \). Om \(
+        \lambda_+ = \lambda_-
+    \), d.v.s.\ att \(
+        Q(\lambda) = (\lambda-\lambda_+)^2
+    \) gäller \(
+        Q(D)(\mu_1 e^{\lambda_+ t} + \mu_2 te^{\lambda_+ t}) = 0
+    \). Ansätt \(
+        y_i(t) = \mu_1 e^{\lambda_+ t} + \mu_2 te^{\lambda_- t} 
+    \) och finn \(
+        \mu_1 \text{ och } \mu_2
+    \) från \(
+        y_i(0) = \mu_1
+    \) och \(
+        y'_i(0) = \lambda_+\mu_++\mu_2
+    \).
+
+    Nu löser vi zerostate:
+    \(
+        Q(D) = (D-\lambda_+)(D-\lambda_-)
+    \). Notera att \(
+        D^n(h*f) = (D^nh) * f
+    \), vilket går att bevisa relativt lätt. Eftersom faltning är kommutativt 
+    kan vi även derivera \(
+        f
+    \).
+
+    \(
+        Q(D)(h*f) = (Q(D)h) * f
+    \). Ansätt \(
+        h = h_{\lambda_+} * h_{\lambda_-}
+    \). 
+
+    Ansätt också \(
+        y_0 = h * f
+    \), då är \(
+        (D-\lambda_- )y_0 = h_{\lambda_+}*f
+    \) och \(
+        h_{\lambda_+} * f(0) = 0
+    \). 
+
+    Jag orkade inte anteckna här, massa steg typ. Det blir enklare med 
+    Laplace.
+\end{ex}
+
+\dquote{Vad kom \(
+    \mu
+\) ifrån?'' \\ ''Från ovan!}{Person som frågade och mattesnubben}
+
+\dquote{Om vi nu delar den här skiten.}{Mattesnubben}
+
+\subsection{Diskreta fallet}
+I det diskreta fallet har vi ekvationen \(
+    Q(E)y = P(E)x
+\) där \(
+    E(f[k]) = f[k+1]
+\) och har \(
+    y[-k]
+\) givna för \(
+    k = 0, \dots, ord(Q)-1
+\). Funkar annars på samma sätt förutom att \(
+    D 
+\) ersätts med \(
+    E
+\) och \(
+    y(0)
+\) med \(
+    y[-k]
+\). 
+
+I kontinuerliga fall har vi \(
+    D(e^\lambda t) = \lambda e^{\lambda t}
+\) som genom \(
+    e_a[k] = a^k
+\) motsvaras av \(
+    E(e_a[k]) = e_a[k+1] = a^{k+1} = a \cdot a^k = a e_a
+\).
+
+\begin{ex}
+    Vi löser \(
+        y[k+1] + ay[k] = x[k]
+    \) där \(
+        y[0] 
+    \) är given.
+
+    Vi har \(
+        Q(E) = E+a
+    \). Vi börjar med att lösa \(
+        y_i
+    \), d.v.s.\ \(
+        Q(E)y_i = 0
+    \) och \(
+        y_i[0] = y[0]
+    \). Ansätt \(
+        y_i = ce_{-a}
+    \) så att \(
+        (E+a)e_{-a} = 0
+    \). Då har vi \(
+        y_i[0] = ce_{-a}[0] = c = y[0]
+    \) och därmed \(
+        y_i[k] = y_i[0]a^k
+    \).
+
+    Nu löser vi för \(
+        y_0
+    \), då börjar vi med att ansätta \(
+        h[k] = h_{-a}[k] = e_a[k]u[k]
+    \) och \(
+        y_0 = h * x
+    \). 
+
+    \(
+        E(h*x[m]) = \bs_{l=1}^{m+1} h[l]x[m+1-l] = \bs_{l=1}^m h[l+1]x[m-l] + h[1]x[m]
+    \) eftersom \(
+        h*x = \text{ (om båda är kausala) } = \bs_{l=0}^m h[l]x[m-l]
+        = \bs_{l=1}^m h[l]x[m-l]
+    \). Allt som allt gäller \(
+        E(h*x) = ah * x + ax
+    \). Alltså \(
+        y_0 = \inv{a} h* x
+    \) vilket löser det ville innan.
+\end{ex}
+
+\dquote{Det kommer bara bli blodsspillan om vi har k där}{Mattesnubben}
+\dquote{Vad gör vi nu, vad gör vi här, vem är jag?}{Mattesnubben}
+\dquote{Nu börjar det lukta fågel}{Mattesnubben}
+\dquote{När jag var i Tyskland var jag tvungen att dra bajsskämt för att det skulle gå, men här verkar det funka ändå.}{Mattesnubben}
+\dquote{Fourier-serier är något extremt vackert, tårar kommer att fällas.}{Mattesnubben}
+
+\end{document}

@@ -1,0 +1,201 @@
+\documentclass[a4paper]{article}
+\usepackage{../flpack}
+
+\begin{document}
+
+\providecommand\fname{}
+\renewcommand\fname{19-09-05}
+
+\subsection{Fler signaler}
+\subsubsection{Enhetssteg (kontinuerligt)}
+Betecknas \(
+    u(t) = 1 \text{ om } t \geq 0, 0 \text{ annars} 
+\).
+
+\f
+
+Den används oftast ihop med en generell signal \(
+    x(t)\cdot u(t)
+\) så att den får signalvärden \(
+    0
+\) när \(
+    t < 0
+\).
+
+\subsubsection{Enhetsimpuls}
+Tekniskt sett inte en \enquote{vanlig} funktion, det är snarare en distribution eftersom 
+den inte har väldefinierade amplitudvärden för alla invärden.
+
+\begin{defn}
+    \(
+        \delta(t) = 0 \text{ för } t \neq 0
+    \) men \(
+        \bi_{-\infty}^{\infty} \delta(t) \dd t = 1
+    \) 
+\end{defn}
+
+Möjlig grafisk beskrivning: \f
+
+Det är en \enquote{oändligt kort} signal med en \enquote{oändligt hög} 
+amplitud. Amplituden vid \(
+    t = 0
+\) är inte begränsad. Vår grafiska notation är följande: \f
+
+Enhetsimpulsen definieras utifrån sina egenskaper.
+
+Låt \(
+    f(t)
+\) vara en godtycklig funktion (signal) som är kontinuerlig vid \(
+    t = t_0
+\). Då är \(
+    f(t)\delta(t-t_0) = f(t_0)\delta(t-t_0)
+\). Vidare gäller 
+\begin{align*}
+    &\bi_{-\infty}^{\infty} f(t)\delta(t-t_0)\dd t \\
+    =& \bi_{-\infty}^{\infty} f(t_0)\delta(t-t_0)\dd t\\
+    =& f(t_0) \bi_{-\infty}^{\infty} \delta(t-t_0)\dd t\\
+    =& f(t_0)\text{.} 
+\end{align*}
+
+\subsubsection{Samband mellan enhetssteg och enhetsimpuls}
+\(
+    u(t) = \bi_{-\infty}^{t} \delta(\tau)\dd \tau
+\) och \(
+    \delta(t) = \displaystyle\dv{u(t)}{t}
+\).
+
+\subsubsection{Diskreta varianter}
+Motsvarande gäller för diskreta varianter av enhetssteg och enhetsimpuls.
+
+\f
+
+\begin{defn}
+    Den diskreta enhetsimpulsen \(
+        \delta [n] = 1 \text{ om } n = 0, 0 \text{ annars.} 
+    \) 
+\end{defn}
+
+\f
+
+\subsubsection{Samband mellan diskreta varianter}
+\(
+    \delta [n] = u[n] - u[n-1]
+\) och \(
+    u[n] = \bs_{k=-\infty}^{n} \delta[k]
+\) 
+
+\subsection{System}
+En process där det finns en relation mellan orsak (insignal) och verkan 
+(utsignal). Kan symboliseras som ett vanligt blockschema med en låda
+och pilar. En matematisk ekvation kan användas för att beskriva systemet, 
+ex.\ elektriska kretsar och mekaniska system. Oftast differentialekvationer.
+
+\subsection{Systemegenskaper}
+\subsubsection{Tidsinvarians}
+För ett tidsinvariant system gäller 
+\begin{align*}
+    \text{Insignal} &\implies \text{Utsignal} \\
+    x(t) &\implies y(t) \\
+    x(t-t_0) &\implies y(t-t_0)
+\end{align*}
+
+\aquote{Nu är det så att jag använder språket svenska.}
+
+\f 
+
+Ett system är då tidsinvariant om \(
+    y(t-t_0) = y_d(t)
+\) och samma gäller för ett diskret system. 
+
+\subsubsection{Linearitet}
+För ett linjärt system gäller 
+\begin{align*}
+    \text{Insignal} &\implies \text{Utsignal} \\
+    x(t) &\implies y(t) \\
+    a\cdot x(t) &\implies a\cdot y(t), a \text{ konstant (Systemet homogent)}  \\
+    x_1(t) &\implies y_1(t) \\
+    x_2(t) &\implies y_2(t) \\
+    x_1(t) + x_2(t) &\implies y_1(t) + y_2(t), \text{ (Systemet additivt)}  \\
+    a_1x_1(t) + a_2x_2(t)+\dots &\implies a_1y_1(t)+a_2y_2(t)+\dots \text{ (Kallas superposition)} 
+\end{align*}
+Om ett system är homogent och additivt är det linjärt.
+
+\subsubsection{Stabilitet}
+Ett system är stabilt om en begränsad insignal ger en begränsad utsignal. 
+På engelska BIBO (Bounded input bounded output).
+
+\(
+    \forall t \abs{x(t)} < M_x < \infty \implies \abs{y(t)} < M_y < \infty
+\) 
+
+\subsubsection{Kausalitet}
+Ett system är kausalt om utsignalen \(
+    y(t)
+\) endast beror på samtida och/eller tidigare värden på insignalen \(
+    x(t)
+\). Alla fysikaliska system är kausala om \(
+    t 
+\) är tid.
+
+\subsubsection{Minne/Dynamiskt system}
+Ett system har minne om dess utsignal vid tidpunkten \(
+    t_0, y(t_0)
+\), beror på fler insignaler än bara \(
+    x(t_0)
+\). 
+
+\begin{ex}[Spänning över en kondensator]
+    Insignalen är strömmen genom kondensatorn \(
+        i(t)
+    \) och utsignalen är spänningen \(
+        v(t)
+    \). Då är \(
+        v(t) = \inv(C) \bi_0^t i(\tau) \dd \tau + v(0)
+    \). \(
+        v(t)
+    \) beror på tidigare värden, alltså är systemet dynamiskt/har minne.
+\end{ex}
+
+\subsubsection{Minneslöshet/Statiskt system}
+\begin{ex}[Spänning över en resistans]
+    In- och utsignaler som förra exemplet, då är \(
+        v(t) = R \cdot i(t)
+    \). Eftersom det bara beror på \(
+        i(t)
+    \) och inga andra \(
+        i
+    \) är systemet minneslöst/statiskt.
+\end{ex}
+
+Alla dessa egenskaper gäller även för diskreta system. 
+
+\begin{ex}[Diskret exempel]
+    \[
+        y[n] = n \cdot x[n]
+    \]
+
+    Vi ser om det är tidsinvariant. 
+    \f
+
+    Inte tidsinvariant eftersom \(
+        y_d[n] \neq y[n-n_0]
+    \).
+
+    Kollar om det är linjärt:
+    \begin{align*}
+        \text{Insignal} &\implies \text{Utsignal} \\
+        x_1[n] &\implies y_1[n] = n \cdot x_1[n] \\
+        x_2[n] &\implies y_2[n] = n \cdot x_2[n] \\
+        x_3[n] = a_1x_1[n] + a_2x_2[n] &\implies y_3[n] = n\cdot x_3[n]
+        = n(a_1x_1[n] + a_2x_2[n]) = a_1nx_1[n]+a_2nx_2[n] = a_1y_1[n] + a_2y_2[n]
+    \end{align*}
+    Alltså är det linjärt.
+
+    Det är inte stabilt eftersom \(
+        y[n] = n\cdot x[n]
+    \) inte är begränsat ty \(
+        n
+    \) inte är begränsat. Det är dock kausalt, vilket inses lätt.
+\end{ex}
+
+\end{document}

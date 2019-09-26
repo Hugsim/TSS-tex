@@ -1,0 +1,195 @@
+\documentclass[a4paper]{article}
+\usepackage{../flpack}
+
+\begin{document}
+
+\providecommand\fname{}
+\renewcommand\fname{19-09-25}
+
+\dquote{När ni lyssnar på Spotify är det ju inte ettor och nollor som strömmar in i örat på er.}{Antman}
+\subsection{Rekonstruktion}
+\begin{sats}[Samplingsteoremet]
+    Låt \(
+        x(t)
+    \) ha Fouriertransformen \(
+        X(\io)
+    \) och vara en bandbegränsad signal, d.v.s.\ \(
+        X(\io) = 0 
+    \) för något \(
+        \abs{\omega} > \omega_M
+    \).
+    
+    Då, om samplingsfrekvensen \(
+        \omega_s > 2\omega_M
+    \) kan \(
+        x(t)
+    \) återskapas utifrån sina sampelvärden \(
+        x[n] = x(nT), n \in \intn
+    \) där \(
+        \omega_s = \frac{2\pi}{T} 
+    \).
+\end{sats}
+
+\begin{defn}[Nyquistfrekvens]
+    Halva samplingsfrekvensen \(
+        \frac{\omega_s}{2}
+    \) kallas \emph{Nyquistfrekvensen}.
+    Den jämförs med \(
+        \omega_M
+    \).
+\end{defn}
+
+Om \(
+    x(t)
+\) inte är bandbegränsad kan man använda ett 
+\emph{antivikningsfilter/anti aliasing filter}, d.v.s.\ ett kontinuerligt 
+lågpassfilter. Det reducerar bandbredden hos en signal \(
+    x(t)
+\) och appliceras innan sampling. Tanken är att det ska ta bort 
+frekvenser som är större än \(
+    \frac{\omega_s}{2} 
+\) och därmed minska effekten av vikning/aliasing.
+
+\subsubsection{Ideal rekonstruktion}
+Handlar om att återskapa \(
+    x(t)
+\) utifrån sina sampelvärden \(
+    x[n] \coloneqq x(nT)
+\). 
+
+\(
+    x(t) \xleftrightarrow{\text{FT}} X(\io)
+\) och \(
+    x_p(t) \xleftrightarrow{\text{FT}} X_p(\io) 
+        = \inv{T} \sum_{k=-\infty}^\infty X(i(\omega-k\omega_s))
+\). Applicera ett idealt rekontruktionsfilter/-system 
+\[
+    H_r(\io) = 
+    \left\{\begin{matrix}
+        T & \abs{\omega} < \frac{\omega_s}{2}\\ 
+        0 & \text{annars} 
+    \end{matrix}\right.
+\] 
+
+Vi får då \(
+    Y(\io) = H_r(\io)X_p(\io)
+\) och i tidsdomänen \(
+    y(t) = h_r(t) * x_p(t) 
+         = h_r(t) * (\sum_{n=-\infty}^\infty x[n] \delta(t-nT))
+         = \sum_{n=-\infty}^\infty x[n] h_r(t-nT)
+\). \(
+    y(t)
+\) är då en summa av viktade och skiftade impulssvar \(
+    h_r(t)
+\). Nu vill vi beräkna de impulssvaren. 
+\begin{align*}
+    h_r(t) &= \inv{2\pi} \infint H_r(\io) e^{\io t} \dd \omega \\
+           &= \frac{T}{2\pi} \int_{-\frac{\omega_2}{2}}^{\frac{\omega_s}{2}} 
+                e^{\io t} \dd \omega \\
+           &= \frac{T}{2\pi} \left[ \frac{e^{\io t}}{it} \right]_{-\frac{\omega_2}{2}}^{\frac{\omega_s}{2}} \\
+           &= \frac{T}{\pi t} \inv{2i} \left(e^{i \frac{\omega_s}{2}t} - e^{-i \frac{\omega_s}{2}t}\right) \\
+           &= \frac{T}{\pi t} \sin(\frac{\omega_s}{2} t)  \\
+           &= \{T = \frac{2\pi}{\omega_2} \} \\
+           &= \frac{2\pi}{\omega_s \pi t} \sin(\frac{\omega_s}{2} t)  \\
+           &= \frac{\sin(\frac{\omega_s}{2} t)}{\frac{\omega_s}{2} t} \\
+           &= \text{sinc}\left(\frac{\omega_s}{2} t\right). \\
+\end{align*}
+
+\begin{defn}[sinc]
+    \(
+        \text{sinc}(x) \coloneqq \frac{\sin(x)}{x} 
+    \) 
+
+    \f
+\end{defn}
+
+Ett praktiskt problem med detta är att \(
+    h_r(t)
+\) inte är kausalt och har oändlig utsträckning.
+
+\subsubsection{Praktisk rekonstruktion}
+För att göra det praktiskt att rekonstruera måste systemet vara kausalt.
+Vi gör det genom att arbeta med hållkretsar, och vi börjar med nollte 
+ordningens hållkrets. Det är ett system där \(
+    x_p(t)
+\) ger en utsignal \(
+    x_0(t)
+\) med impulssvaret
+\[
+    h_0(t) = \left\{\begin{matrix}
+                 1 & 0 \leq t < T\\ 
+                 0 & \text{annars} 
+             \end{matrix}\right.
+\] 
+
+\f
+
+Sampelvärdet hålls kvar på sin nivå tills nästa sampelvärde kommer.
+
+\(
+    x_0(t) = h_0(t) * x_p(t)
+           = \{x[n] = x(nT)\}
+           = h_0(t) * \sum_{n=-\infty}^\infty x[n] \delta(t-nT)
+           = \sum_{n=-\infty}^\infty x[n] h_0(t-nT)
+\). Nu analyserar vi med Fouriertransformen/i frekvensdomänen: \(
+    X_0(\io) = H_0(\io) X_p(\io)
+\). Då är \(
+    h_0(t) \xleftrightarrow{\text{FT}} 2e^{-i \frac{\omega T}{2} } \frac{\sin(\frac{\omega T}{2} )}{\omega} 
+\) vilket i princip är en \(
+    \text{sinc} 
+\)-funktion.
+
+\subsubsection{Aliasing/vikning}
+\begin{ex}
+    Låt \(
+        x(t) = A \cos(\omega_M t) = \frac{A}{2} (e^{\io_M t} + e^{-\io_M t}
+    \).
+
+    Fouriertransformen av det är \(
+        X(\io) = A \pi (\delta(\omega - \omega_M) + \delta(\omega+\omega_M))
+    \).
+
+    \f
+
+    Sen samplar vi vilket ger \(
+        X_p(\io) = \inv{T} \sum_{k=-\infty}^\infty X(i(\omega - k \omega_s))
+    \). Om \(
+        \omega_M < \frac{\omega_s}{2} 
+    \) får vi 
+
+    \f
+
+    Med ett idealt rekonstruktionsfilter \(
+        H_r(\io)
+    \) får vi \(
+        H_r(\io) X_p(\io) 
+            = T \frac{A \pi}{T} (\delta(\omega-\omega_M) + \delta(\omega+\omega_M))
+    \). Vi får alltså tillbaka \(
+        x(t) = A \cos(\omega_M t)
+    \) 
+
+    Annars, om \(
+        \omega_M > \frac{\omega_s}{2}
+    \) får vi  
+
+    \f
+
+    Med det ideala rekonstruktionsfiltret får vi då \(
+        X_p(\io) H_r(\io) 
+            = A \pi (\delta(\omega-(\omega_s-\omega_M)) + \delta(\omega+(\omega_s - \omega_M)))
+    \) vilket svarar mot \(
+        x_1(t) = A \cos((\omega_s-\omega_M) t)
+    \). 
+
+    Med ett numeriskt exempel med konstanterna 
+    \begin{align*}
+        \omega_s &= \SI{200}{\radian\per\second} \\
+        \omega_M &= \SI{120}{\radian\per\second} 
+    \end{align*}
+
+    Den rekonstruerade signalen har då vinkelfrekvensen \(
+        \omega_s-\omega_M = 200-120= \SI{80}{\radian\per\second}
+    \). Det är en \enquote{falsk} frekvens, d.v.s.\ aliasing/vikning.
+\end{ex}
+
+\end{document}

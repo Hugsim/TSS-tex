@@ -176,7 +176,7 @@ Alltså är den bästa approximationen \[
 
 \dquote{Det här är högst icke-trivialt.}{Mattesnubben}
 
-\dquote{Om man stoppar in något i datorn som itne konvergerar kommer det gå åt röven.}{Mattesnubben}
+\dquote{Om man stoppar in något i datorn som inte konvergerar kommer det gå åt röven.}{Mattesnubben}
 
 \begin{ex}
     \f
@@ -186,12 +186,12 @@ Alltså är den bästa approximationen \[
     \), för \(k \geq 0 \text{ har vi } 
         a_k = \bif{2}{T} \bi_0^T f(t) \cos(k \omega_0 t)\dd t = \bif{2}{T} \bi_0^{\frac{T}{2}} \cos(k \omega_0 t)\dd t = 
         1 \text{ för } k = 0, 
-        \bif{2}{Tk\omega_0}[\sin(k\omega_0t)]_0^{\bif{T}{2}} 
+        \bif{2}{Tk\omega_0}[\sin(k\omega_0t)]_0^{\frac{T}{2}} 
         = 1 \text{ för } k = 0, 0 \text{ annars.} 
     \) och för \( k > 0 \text{ har vi } 
         b_k = \bif{2}{T} \bi_0^T f(t) \sin(k \omega_0 t)\dd t = 
         \bif{2}{T} \bi_0^{\frac{T}{2}} \sin(k \omega_0 t)\dd t =
-        \bif{2}{Tk\omega_0}[-\cos(k\omega_0t)]_0^{\frac{T}{2}} =
+        \bif{2}{Tk\omega_0}\left[-\cos(k\omega_0t)\right]_0^{\frac{T}{2}} =
         \bif{1}{\pi k} (-\cos(k\pi) + 1) =
         \bif{1}{\pi k} (- (-1)^k + 1) =
         0 \text{ för } k = 2m \text{ och } \bif{2}{\pi(2m+1)} \text{ annars.}  

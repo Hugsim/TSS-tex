@@ -1,0 +1,376 @@
+\documentclass[a4paper]{article}
+\usepackage{../flpack}
+
+\begin{document}
+
+\providecommand\fname{}
+\renewcommand\fname{19-09-26}
+
+\subsection{Laplacetransformen}
+Man brukar prata om en- och tvåsidiga Laplacetransformer. 
+\subsubsection{Tvåsidig}
+\begin{defn}[Tvåsidig Laplacetransform]
+    Låt \(
+        f(t), -\infty < t < \infty
+    \) vara en signal. Då är Laplacetransformen \(
+        F(s) = \infint f(t)e^{-st}\dd t
+    \) där \(
+        s \in \compn
+    \), vilket typ är \(
+        FT(f)
+    \).
+\end{defn}
+    
+Följande är det kausala fallet av den tvåsidiga transformen.
+\begin{defn}[Ensidig Laplacetransform]
+    Låt \(
+        f(t)
+    \) vara en kausal signal, d.v.s.\ \(
+        f(t) = 0
+    \) för \(
+        t < 0
+    \).
+
+    Då är \(
+        F(s) = \int_0^\infty f(t) e^{-st}\dd t
+    \) där \(
+        s \in \compn
+    \).
+\end{defn}
+
+\begin{defn}[Exponentiellt begränsad]
+    \(
+        f
+    \) är exponentiellt begränsad om efter något \(
+        t_0
+    \) beter den sig som en exponentiell funktion.
+
+    Matematiskt säger vi att \(
+        \exists \; c \in \realn, t_0 > 0 : \abs{f(t)} \leq e^{ct} \forall t > t_0
+    \).
+\end{defn}
+
+\begin{ex}
+    \(
+        f(t) = \delta(t-a)
+    \). Om \(
+        a \geq 0
+    \) är den kausal.
+
+    För alla \(
+        t_0 > a
+    \) är \(
+        f(t) = 0 \forall t > t_0
+    \) och därmed \(
+        \abs{f(t)} \leq e^{ct} \forall c \in \realn
+    \). Alltså är den exponentiellt begränsad.
+\end{ex}
+
+\begin{påst}[När Laplace är definierat]
+    Om \(
+        f 
+    \) är exponentiellt begränsad för något \(
+        c \in \realn
+    \) så är Laplacetransformen \(
+        F(s)
+    \) väldefinierad för \(
+        \Re{s} > c
+    \).
+
+    \begin{proof}
+        Tanken är att man visar att andra termen i \(
+            F(s) = \int_0^{t_0} f(t) e^{-st} \dd t + \int_0^{t_0} f(t) e^{-st}\dd t
+        \) är begränsad.
+    \end{proof}
+\end{påst}
+
+\begin{ex}
+    Låt \(
+        f(t) = \delta(t-a)
+    \) för något \(
+        a > 0
+    \).
+
+    Då är \(
+        F(s) = \int_0^\infty \delta(t-a) e^{-st} \dd t 
+             = e^{-sa}
+    \).
+\end{ex}
+
+\begin{ex}
+    Låt \(
+        f(t) = u(t)
+    \). 
+
+    Då är \(
+        F(s) = \int_0^\infty e^{-st} \dd t = \inv{s}
+    \).
+\end{ex}
+
+\begin{ex}
+    Låt \(
+        f(t) = tu(t)
+    \).
+
+    Då är \(
+        F(s) = \int_0^\infty te^{-st} \dd t = \{\text{Partiell integrering}\} = \frac{n!}{s^{n+1}} 
+    \).
+\end{ex}
+
+\begin{ex}
+    Låt \(
+        f(t) = \delta'(t-a)
+    \) för något \(
+        a > 0
+    \). 
+
+    Då är \(
+        F(s) = \int_0^\infty \delta'(t-a) e^{-st} \dd t = se^{-sa}
+    \).
+\end{ex}
+
+\begin{ex}
+    Låt \(
+        f(t) = e^{at}u(t)
+    \). 
+
+    Då är \(
+        F(s) = \int_0^\infty e^{at} e^{-st} \dd t = \frac{1}{s-a} 
+    \) om \(
+        \Re{s} > \Re{a}
+    \).
+\end{ex}
+
+\begin{påst}[Laplace av faltning]
+    Om \(
+        x_1, x_2
+    \) är ensidiga gäller att Laplacetransformen av \(
+        x_1 * x_2 = X_1X_2
+    \).
+
+    \begin{proof}
+        Laplace av \(
+            x_1*x_2 = \int_0^\infty (x_1 * x_2) e^{-st} \dd t
+                    = \int_0^\infty \int_0^t x_1(\tau) x_2(t-\tau) e^{-st} \dd \tau \dd t
+                    = \{ v = t-\tau \}
+                    = \int_0^\infty \int_0^\infty x_1(\tau) x_2(v) e^{-s(\tau + v)} \dd \tau \dd v
+                    = X_1(s)X_2(s)
+        \).
+    \end{proof}
+\end{påst}
+
+För en kausal LTI gäller att \(
+    y = h*x \iff Y = HX
+\). För att visa det här måste vi veta att Laplacetransformen av en signal är 
+unik. 
+
+\subsubsection{Egenskaper för Laplace}
+Vi skriver \(
+    \lap f(s) \coloneqq F(s)
+\).
+
+\begin{enumerate}
+    \item \(
+        \lap 
+    \) är linjär, d.v.s.\ \(
+        \lap(f_1+\lambda f_2) = \lap f_1 + \lambda \lap(f_2)
+    \).
+
+    \item \(
+        f(t-a) \xmapsto{\lap} e^{-as} F(s)
+    \) 
+
+    \item \(
+        e^{-zt} f(t) \xmapsto{\lap} F(s+z)
+    \) 
+
+    \item \(
+        f'(t) \xmapsto{\lap} s \lap(f)(s) - f(0)
+    \) eftersom \(
+        \lap(f'(s)) = \int_0^\infty f'(t) e^{-st} \dd t
+        = \left[ f(t) e^{-st} \right]_{t=0}^\infty - \int_0^\infty f(t) \cdot (-s) e^{-st} \dd t
+        = f(\infty) e^{-s\infty} - f(0) + s \int_0^\infty f(t) e^{-st} \dd t 
+        = sF(s) - f(0)
+    \) 
+\end{enumerate}
+
+Om \(
+    f
+\) är en signal med  \(
+    c < 0
+\) är \(
+    F(s) 
+\) definierad för \(
+    \Re(s) = 0
+\). Då kan vi definiera \(
+    F(\io) = 
+\) FT för \(
+    f
+\).
+
+Laplace kan definieras i vissa fall när FT inte existerar, ex.\ \(
+    f(t) = e^t u(t)
+\). Då är FT \(
+    \approx \int_0^\infty e^t e^{-\io t} \dd t
+\). \(
+    \lap(f)(s) = \inv{s-1}, \Re{s} > 1
+\).
+
+För en kausal LTI \(
+    y=h*x
+\), om vi stoppar in \(
+    x(t) = e^{st} 
+\), ger \(
+    y(t) = h * e^{st}
+         = \int_0^\infty h(\tau) e^{s(t-\tau)} \dd \tau
+         = e^{st} \int_0^\infty h(\tau) e^{-s\tau} \dd \tau
+         = \lap(H)(s) x(t)
+\).
+
+Låt \(
+    y' + ay = x
+\) där \(
+    y(0) 
+\) är given.
+
+Genom Laplace får vi \(
+    \lap(y' + ay) = s Y(s) - y(0) + aY = X
+        \implies Y(0) = \frac{X+y(0)}{s+a} 
+            = \lap(e^{-at}u(t))\cdot (X+y(0))
+            = \lap(e^{-at}u(t) * (x + y(0) \delta(t)))
+\) vilket om \(
+    \lap
+\) är inverterbar ger att \(
+    y(t) = e^{-at} u(t) * (x(t) + y(0) \delta(t))
+         = y(0) e^{-at} u(t) + \int_0^t e^{-a\tau} x(t-\tau) \dd \tau
+\).
+
+\begin{ex}
+    Låt \(
+        f(t) = \cos(at) u(t)
+    \) där \(
+        a \in \realn
+    \).
+
+    \(
+        f(t) = \frac{e^{iat} + e^{-iat}}{2} u(t) 
+    \). Då är \(
+        F(s) = \half (\lap(e^{iat} u(t)) + \lap(e^{-iat} u(t)))
+             = \half( \inv{s-ia} + \inv{s+ia} ) 
+             = \frac{s}{s^2+a^2} 
+    \).
+\end{ex}
+
+\begin{ex}
+    Låt \(
+        f(t) = \sin(at), a \in \realn
+    \). 
+
+    \(
+        \dv{t} \sin(at) = a \cos(at)
+            \implies s \lap(\sin(at))(s) - \sin(a\cdot 0) 
+                = a \cdot \frac{s}{s^2+a^2} 
+            \implies s \lap(\sin(at))(s) = \frac{as}{a^2+s^2}
+            \implies \lap(\sin(at))(s) = \frac{a}{a^2+s^2} 
+    \) 
+\end{ex}
+
+Om \(
+    \abs{f(t)} \leq e^{ct} 
+\) och \(
+    \sigma > c
+\) är \(
+    \int_0^\infty \abs{f(t) e^{-\sigma t}} \dd t < \infty
+\) vilket ger att FT för \(
+    f(t) e^{-\sigma t}
+\) är väldefinierad. Utöver det bildar \(
+    f(t) e^{-\sigma t}
+\) ett Fouriertransformpar med \(
+    F(\io + \sigma)
+\).
+
+Alltså är \(
+    f(t) e^{-\sigma t} = \inv{2\pi} \infint F(\io + \sigma) e^{\io t} \dd \omega
+        \implies f(t) = \frac{ e^{\sigma t} }{2\pi} \infint F(\io + \sigma) e^{\io t} \dd \omega
+        = \{s = \io + \sigma\}
+        = \inv{2\pi i} \int_{\sigma-\io}^{\sigma+\io} F(s) e^{st} \dd s
+\) vilket kallas för \emph{Bromwichintegralen}.
+
+\begin{sats}[Likhet av två signaler och dess två Laplacetransformer]
+    Om \(
+        f_1 
+    \) och \(
+        f_2
+    \) är två kausala signaler med \(
+        F_1 = F_2 
+    \) är \(
+        f_1 = f_2
+    \).
+\end{sats}
+
+\begin{ex}
+    Vi vill finna den signal \(
+        f(t)
+    \) så att \(
+        \lap(f)(s) = \frac{s+1}{s^2+2} 
+            = \frac{s}{s^2} + \frac{1}{s^2+2} 
+            = \frac{s}{s^2+{\sqrt{2}}^2} + \inv{\sqrt{2}} \frac{\sqrt{2}}{s^2 + {\sqrt{2}}^2}
+            = \lap(\cos(\sqrt{2} t)) + \lap(\inv{\sqrt{2}} \sin(\sqrt{2} t)) 
+            \implies f(t) = \cos(\sqrt{2} t) + \inv{\sqrt{2}} \sin(\sqrt{2} t)
+    \).
+\end{ex}
+
+\begin{ex}
+    Anta att insignalen \(
+        x
+    \) uppfyller \(
+        x(0) = 0
+    \). Vi ska skriva om \(
+        \left\{\begin{matrix}
+            y'' + 2y + x'+x \\ 
+            y(0) = y'(0) = 0
+        \end{matrix}\right.
+    \) på formen \(
+        y = h*x
+    \).
+
+    Laplacetransform ger \(
+        s^2 Y + 2Y = sX + X
+        \iff
+        Y = \frac{s+1}{s^2+2} X
+        \iff 
+        y = (\cos(\sqrt{2} t) + \inv{\sqrt{2}} \sin(\sqrt{2} t)) * x
+    \).
+\end{ex}
+
+\begin{sats}[Slutvärdessatsen]
+    Låt \(
+        f
+    \) vara en kausal och begränsad signal, d.v.s.\ \(
+        \exists c > 0 
+    \) s.a.\ \(
+        \abs{f(t)} \leq c
+    \).
+
+    Satsen är att \(
+        f(0+) = \lim_{\epsilon \to 0+} f(\epsilon) = \lim_{s \to \infty} s F(s)
+    \) och \(
+        \lim_{t \to \infty} f(t) = \lim_{s\to 0}sF(s)
+    \).
+
+    \begin{proof}
+        Om \(
+            s > 0
+        \) är \(
+            s F(s) = s \int_0^\infty f(t) e^{-st} \dd t 
+                = \{u = st\} 
+                = \int_0^\infty f(\frac{u}{s} ) e^{-u} \dd u
+                \implies sF(s) = \lim_{s\to 0} \int_0^\infty f(\frac{u}{s} ) e^{-u} \dd u
+                = \int_0^\infty \lim_{t\to \infty} f(t) e^{-u} \dd u
+                = \lim_{t\to \infty} f(t) \int_0^\infty e^{-u} \dd u
+                = \lim_{t\to \infty} f(t)
+        \).
+    \end{proof}
+\end{sats}
+
+\end{document}

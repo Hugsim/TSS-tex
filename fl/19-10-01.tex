@@ -1,0 +1,336 @@
+\documentclass[a4paper]{article}
+\usepackage{../flpack}
+
+\begin{document}
+
+\providecommand\fname{}
+\renewcommand\fname{19-10-01}
+
+\dquote{Bupp bupp bupp}{Mattemannen}
+\subsection{Laplace och differentialekvationer}
+\begin{ex}
+    Vi har en RLC-krets:
+
+    \f
+
+    Vi är intresserade av strömmen \(
+        y(t)
+    \) som går genom kretsen.
+
+    Kirchoff ger att \(
+        V_L(t) + V_R(t) + V_C(t) = x(t)
+    \). Vi vet också att \(
+        V_L(t) = L \cdot y'(t)
+    \), \(
+        V_R(t) = R \cdot y(t)
+    \) och \(
+        V_C(t) = \inv{C} \int_{-\infty}^t y(\tau) \dd \tau
+    \).
+
+    Därmed har vi \(
+        Ly' + Ry + \inv{C} \int_{-\infty}^t y(\tau) \dd \tau = x(t)
+    \) eller genom att derivera en gång till \(
+        L y'' + Ry' + \inv{C} y = x' 
+            \iff Q(D) y = P(D) x
+    \) där \(
+        Q(D) = D^2 + \frac{R}{L} D + \inv{LC} 
+    \) och \(
+        P(D) = \inv{L} D
+    \). Detta är en andra ordningens differentialekvation.
+
+    Vi kommer tillbaka till hur vi löser detta, men först tittar vi på hur vi
+    löser enklare fall.
+\end{ex}
+
+Om \(
+    P(D) = 1
+\) kan vi använda \(
+    y = y_0 + y_{\text{in}}
+\) där zerostate \(
+    y_0
+\) löser \(
+    \left\{\begin{matrix}
+        Q(D)y_0 = x\\  
+        y_0^{(j)}(0) = 0 \; \forall \; j 
+    \end{matrix}\right.
+\) och zeroinput \(
+    y_{\text{in}} 
+\) löser \(
+    \left\{\begin{matrix}
+        Q(D)y_{\text{in}} = 0\\ 
+        y_\text{in}^{(j)}(0) = y^{(j)}(0) \; \forall \; j 
+    \end{matrix}\right.
+\).
+
+Vi börjar med att lösa zerostate. Vi vet att \(
+    \lap(Q(D)y_0) = X(s)
+\) och \(
+    \lap(D^2y_0) = s^2\lap(y)(s)
+\). Därmed har vi att \(
+    Y_0(s) = \inv{Q(s)} X(s) 
+        \iff y_0(t) = h*x(t)
+\) där \(
+    h
+\) uppfyller att \(
+    H(s) = \inv{Q(s)}
+\).
+
+\begin{ex}
+    \(
+        Q(D) = D + a
+    \), d.v.s.\ vi tittar på \(
+        y'+ay = x
+    \). Då är \(
+        Q(s) = s+a
+    \) så att \(
+        H(s) = \inv{s+a} = \lap(e^{-at}u(t))(s)
+    \) och därmed är \(
+        h(t) = e^{-at}u(t)
+    \) och \(
+        y_0(t) = h*x(t) = \int_0^t e^{-a(t-\tau)}x(\tau)\dd \tau
+    \).
+\end{ex}
+
+\begin{ex}
+    Låt \(
+        Q(D) = D^2 + aD + b
+    \). Då är \(
+        Q(s) = s^2 + as + b
+    \) och därmed \(
+        H(s) = \inv{s^2 + as + b}
+    \). Viktigt här (men även generellt) är partialbråksuppdelning.
+    
+    I det här fallet vill vi hitta \(
+        \lambda_{\pm}
+    \) som löser \(
+        \lambda^2 + a \lambda + b = 0
+    \). Då är \(
+        s^2 + a s + b = (s-\lambda_+)(s-\lambda_-)
+    \).
+
+    Vi vill förenkla \(
+        \inv{(s-\lambda_+)(s-\lambda_-)}
+    \) och använder partialbråksuppdelning för det. Då får vi att det 
+    är lika med \(
+        \inv{\lambda_+ - \lambda_-} \left( \inv{s-\lambda_+} - \inv{s-\lambda_-} \right)
+    \). 
+
+    Då är \(
+        \inv{s^2 + as + b} = \left\{\begin{matrix}
+            \inv{\lambda_+ - \lambda_-} \left( \inv{s-\lambda_+} - \inv{s-\lambda_-} \right) & \lambda_+ \neq \lambda_- \\ 
+            \inv{(2-\lambda_+)^2} & \lambda_+ = \lambda_-
+        \end{matrix}\right.
+    \) vilket då när vi använder Laplace ger att det är lika med \(
+        \left\{\begin{matrix}
+            \frac{u(t)}{\lambda_+ - \lambda_-} \left( e^{\lambda_+ t} - e^{\lambda_- t} \right) & \lambda_+ \neq \lambda_- \\ 
+            t e^{\lambda_+ t} u(t) & \lambda_+ = \lambda_-
+        \end{matrix}\right.
+    \).
+\end{ex}
+
+Vi går sedan vidare till att lösa zeroinput: Då vill vi lösa \(
+    \left\{\begin{matrix}
+        Q(D)y_{\text{in}} = 0 \\
+        y_{\text{in}}^{(j)} (0) = y^{(j)}(0) \; \forall \; j
+    \end{matrix}\right.
+\). 
+
+\begin{ex}
+    Låt \(
+        Q(D) = D^2 + aD + b
+    \). Då är \(
+        \lap(Q(D) y_{\text{in}}) = \lap(D^2 y_{\text{in}}) + a \lap(D y_{\text{in}}) + b \lap(y_{\text{in}})
+            = \lap(y_{\text{in}}) - s y(0) - y'(0) + as\lap(y_{\text{in}}) - a y(0) + b \lap(y_{\text{in}})
+            = (s^2+as+b)\lap(y_{\text{in}}) - y'(0)-(s+a)y(0)
+    \) vilket med antaganden som gjordes för zeroinput ger att \(
+        \lap(y_{\text{in}})(s) = \frac{y'(0)+(s+a)y(0)}{Q(s)} 
+    \). Det löses på ett liknande sätt som det andra, med 
+    partialbråksuppdelning.
+
+    \begin{align*}
+        \lap(y_{\text{in}})(s) &= \frac{y'(0)+(s+a)y(0)}{Q(s)} \\
+            &= \frac{y'(0) + (\lambda_+ + a) y(0) + (s-\lambda_+)y(0)}{(s-\lambda_+)(s-\lambda_-)} \\
+            &= (y'(0)+(\lambda_+ + a)y(0))H(s) + \frac{y(0)}{s-\lambda_-} \\
+            &= \lap( (y'(0) + (\lambda_+ + a)y(0))h(t) + y(0) e^{\lambda_- t} u(t))
+            &\iff y_{\text{in}}(t) = (y'(0) + (\lambda_+ + a)y(0))h(t) + y(0) e^{\lambda_- t} u(t)
+    \end{align*}
+\end{ex}
+
+Allmänt, om \(
+    Q(D)y_{\text{in}} = 0
+\) är \(
+    Q(s) y_{\text{in}}(s) = \sum_{k=0}^{n-1} g_{Q,k}(s)y^{(k)}(0)
+\) där \(
+    g_{Q,k} 
+\) ges av att \(
+    g_{Q,n-1}(s) = 1
+\), \(
+    g_{Q,n-2}(s) = s + a_{n-1}
+\), \(
+    g_{Q,n-3}(s) = s^2 + a_{n-1} s + a_{n-2}
+\), \dots, \(
+    g_{Q,0}(s) = s^{n-1} + a_{n-1} s^{n-2} + \cdots + a_2 s + a_1
+\).
+
+Då är \(
+    Y_m(s) = \frac{\sum_{k=0}^{n-1} g_{Q,k}(s)y^{(k)}(0)}{Q(s)} 
+\). 
+
+\dquote{Låt oss ta ett ruggigt konkret exempel.}{Goffeng}
+
+\dquote{Förr, när det var bättre.}{Goffeng}
+
+\subsubsection{Mer allmänt} 
+För en differentialekvation \(
+    Q(D) y = P(D) x
+\) med givet \(
+    x
+\) och \(
+    y^{(j)}(0)
+\) givna för relevanta \(
+    j
+\) får vi av Laplace \(
+    Q(s) Y(s) - \sum_{k=0}^{n-1} g_{Q,k}(s) y^{(k)}(0) 
+        = P(s) X(s) - \sum_{k=0}^{n-1} g_{P,k}(s) x^{(k)}(0)
+\) och därmed \(
+    Y(s) = H(s)X(s) + \inv{Q(s)} \sum_{k=0}^{n-1} \left( g_{Q,k}(s) y^{(k)}(0) - g_{P,k}(s) x^{(k)}(0) \right)
+\) där \(
+    H(s) = \frac{P(s)}{Q(s)} 
+\) är överföringsfunktionen. Detta ger att \(
+    y(t) = h*x(t) + \sum_{k=0}^{n-1} \left( \alpha_{Q,k}(t) y^{(k)}(0) - \beta_{P,k}(t) x^{(k)}(0) \right)
+\) där \(
+    h = \lap^{-1}(H)
+\), \(
+    \alpha_{Q,k} = \lap^{-1}(\frac{g_{Q,k}}{Q} )
+\) och \(
+    \beta_{P,k} = \lap^{-1}(\frac{g_{P,k}}{Q} )
+\).
+
+Hur hittar vi \(
+    h
+\), \(
+    \alpha_{Q,k}
+\) och \(
+    \beta_{P,k}
+\)? 
+
+Båda handlar om att inverstransformera uttryck på formen \(
+    \frac{s^m}{Q(s)} 
+\) där \(
+    m \leq n
+\).
+
+\begin{påst}
+    Om vi kan faktorisera \(
+        Q(s) = (s-\lambda_1)^{\gamma_1}(s-\lambda_2)^{\gamma_2}\cdots (s-\lambda_p)^{\gamma_p}
+    \) så är \(
+        \frac{s^m}{Q(s)} 
+    \) en summa av termer på formen \(
+        \frac{s^l}{(s-\lambda_j)^{\gamma_j}} 
+    \) där \(
+        l < \gamma_p
+    \) eller \(
+        l = 1
+    \).
+\end{påst}
+
+\begin{påst}
+    För \(
+        h = \lap^{-1}(\frac{P}{Q}) 
+    \) gäller att för några konstanter \(
+        l_k
+    \) och \(
+        c_{j,k}
+    \) är \(
+        \sum_{k=1}^P \sum_{i=1}^{l_k} \left( c_{i,k} t^i e^{\lambda_k t} u(t)\right) + b_n \delta(t)
+    \). 
+\end{påst}
+
+Som följd av dessa påståenden får vi att \(
+    h
+\) är stabil (\(
+    \int \abs{h(t)} \dd t < \infty
+\)) om och endast om \(
+    Q(\lambda) = 0 
+\) saknar lösningar med \(
+    \Re{\lambda} \geq 0
+\).
+
+\begin{påst}
+    Om \(
+        h
+    \) är stabil gäller att 
+    \begin{enumerate}
+        \item Om \(
+            y
+        \) löser \(
+            y = h*x
+        \) följer att \(
+            x 
+        \) begränsad \(
+            \implies \; y
+        \) begränsad.
+        \item Om \(
+            y
+        \) löser \(
+            y = h * x
+        \) följer att \(
+            \int_0^\infty \abs{x(t)} \dd t < \infty \implies \int_0^\infty \abs{y(t)} \dd t < \infty
+        \).
+    \end{enumerate}
+
+    \begin{proof}
+        ~ \\
+        \begin{enumerate}
+            \item Om \(
+                \abs{x(t)} \leq C \; \forall \; t
+            \) gäller att \(
+                \abs{y(t)} = \abs{ \int_0^t h(t-\tau) x(\tau) \dd \tau } 
+                    \leq \int_0^t \abs{h(t-\tau)} \abs{x(\tau)} \dd \tau
+                    \leq C \int_0^t \abs{t-\tau} \dd \tau
+                    \leq C \int_0^\infty \abs{h(\tau)} \dd \tau
+            \).
+
+            \item Bevisas inte här, finns i boken.
+        \end{enumerate}
+    \end{proof}
+\end{påst}
+
+\begin{ex}
+    Lös \(
+        y''(t) + ay'(t) + by(t) = cx'(t) + dx(t)
+    \) där \(
+        y(0)
+    \), \(
+        y'(0)
+    \) och \(
+        x(t)
+    \) är givna.
+
+    Då har vi att \(
+        \lap(y''+ay'+by) = (s^2 + as + b) Y - y'(0) - (s+a)y(0)
+    \) och \(
+        \lap(cx'+dx) = (cs+d)X - cx(0)
+    \). Därmed är \(
+        (s^2+as+c) Y(s) - y'(0) - (s+a)y(0) = (cs+d)X - cx(0)
+    \) \(
+        \implies 
+    \) \(
+        Y(s) = \frac{cs+d}{s^2+as+b} X(s) + \frac{y'(0)+(s+a)y(0)-cx(0)}{s^2+as+b} 
+    \).
+
+    Vi vet att \(
+        H(s) = \frac{cs+d}{s^2+as+b} 
+    \). Vad är då \(
+        h
+    \)? Vi skriver \(
+        s^2+as+b = (s+\frac{a}{2} )^2 + b - \frac{a^2}{4} 
+    \). Då är \(
+        H(s) = \frac{cs+d}{(s+\frac{a}{2} )^2 + b - \frac{a^2}{4}}
+             = \frac{c(s+\frac{a}{2} -\frac{ac}{2} + d)}{(s+\frac{a}{2} )^2 + b - \frac{a^2}{4}}
+             = c \frac{s+\frac{a}{2}}{(s+\frac{a}{2} )^2 + b - \frac{a^2}{4}} + \frac{d-\frac{ac}{2})}{(s+\frac{a}{2} )^2 + b - \frac{a^2}{4}}
+             = \lap\left(c e^{-\frac{a}{2} t} \cos(\sqrt{b - \frac{a^2}{4} } t)\right) + \lap\left( \frac{d-\frac{ac}{2} }{\sqrt{b-\frac{a^2}{4} }} e^{-\frac{a}{2} t} \sin( \sqrt{b - \frac{a^2}{4} } t) \right)
+    \).
+\end{ex}
+
+\end{document}

@@ -1,0 +1,137 @@
+\documentclass[a4paper]{article}
+\usepackage{../flpack}
+
+\begin{document}
+
+\providecommand\fname{}
+\renewcommand\fname{19-10-02}
+
+\subsection{Laplacetransformen tillämpad på LTI-system}
+Anta att vi har ett kontinuerligt LTI-system där sambandet mellan in- och 
+utsignal beskrivs av en differentialekvation \[
+    a_N \dv[N]{y}{t} + a_{N-1} \dv[N-1]{y}{t} + \cdots + a_1 \dv{y}{t} + a_0 y
+    = b_M \dv[M]{x}{t} + b_{M-1} \dv[M-1]{x}{t} + \cdots + b_1 \dv{x}{t} + b_0 x
+\] alternativt som \[
+    \sum_{k=0}^N a_k \dv[k]{y}{t} = \sum_{k=0}^M b_k \dv[k]{x}{t}.
+\] 
+
+Anta nu att systemet är i vila, d.v.s.\ alla begynnelsevärden är \(
+    0
+\). När vi Laplacetransformerar får vi då \(
+    \sum_{k=0}^N a_k s^k Y(s) = \sum_{k=0}^M b_k s^k X(s)
+\) och därmed \(
+    Y(s)\sum_{k=0}^N a_k s^k = X(s) \sum_{k=0}^M b_k s^k 
+        \implies
+        \frac{Y(s)}{X(s)} \coloneqq H(s) = \frac{\sum_{k=0}^M b_k s^k}{\sum_{k=0}^N a_k s^k} 
+        = {b_M s^M + b_{M-1}s^{M-1} + \cdots + b_1 s + b_0}%
+        {a_N s^N + a_{N-1}s^{N-1} + \cdots + a_1 s + a_0}
+        \coloneqq \frac{B(s)}{A(s)} 
+\). Detta är en kvot mellan två polynom beroende på \(
+    s
+\), d.v.s.\ en rationell funktion. Den formen fås väldigt ofta från 
+Laplacetransformen i ingenjörstillämpningar. Notera att \(
+    B(s) \neq Y(s)
+\) och \(
+    A(s) \neq X(s)
+\), även om det ser ut så. Polynomen kan även skrivas på faktoriserad form 
+enligt \(
+    H(s) = \frac{b_M \prod_{k=1}^M (s-c_k)}{a_N \prod_{k=1}^N (s-d_k)} 
+         = \frac{b_M (s-c_1)(s-c_2)\cdots (s-c_M)}{a_N (s-d_1)(s-d_2)\cdots (s-d_N)} 
+\) där \(
+    c_k
+\) är nollställen till \(
+    H(s)
+\) och rötter till täljaren med symbolen \(
+    \circ
+\). \(
+    d_k
+\) är poler till \(
+    H(s)
+\) och är rätter till nämnarpolynomet har symbolen \(
+    \times
+\). En graf för ett \(
+    H(s)
+\) kan se ut som följer: \f
+
+Det innehållet all information om \(
+    H(s)
+\) förutom konstanten \(
+    \frac{b_M}{a_N} 
+\). Allmänt kan \(
+    c_k 
+\) och \(
+    d_k
+\) vara antingen reella eller komplexa. Om det finns något komplext \(
+    c_k
+\) eller \(
+    d_k
+\) måste dess konjugat också vara ett nollställe så länge koefficienterna
+i polynomen är reella. Det kommer allt som oftast vara fallet för vanliga 
+fysikaliska system. 
+
+Låt följande beskriva ett LTI-system: 
+\(
+    x(t) \xleftrightarrow{\lap} X(s)
+\), \( 
+    \xleftrightarrow{\lap} Y(s) 
+\) och \(
+    h(t) \xleftrightarrow{\lap} H(s)
+\). 
+
+I tidsdomänen har vi för systemet \(
+    y(t) = h(t) * x(t)
+\), i frekvensdomänen \(
+    Y(s) = H(s)X(s)
+\). Då skapar vi kvoten \(
+    H(s) = \frac{Y(s)}{X(s)} 
+\) vilket vi även fick när vi Laplacetransformerade den generella 
+differentialekvationen tidigare. Vi kallar \(
+    H(s)
+\) för systemets överföringsfunktion. \(
+    \lap^{-1}(H(s)) = h(t)
+\) är systemets impulssvar. För kausala system använder vi den enkelsidiga
+Laplacetransformen. Det räcker i den här kursen. 
+
+\subsection{Invers Laplacetransform}
+Utgå från en kvot mellan våra polynom, exempelvis \(
+    H(s) = \frac{B(s)}{A(s)} 
+\). Anta att \(
+    \text{grad}(B(s)) = M
+\) och \(
+    \text{grad}(A(s)) = N 
+\). För fysikaliska system är alltid \(
+    M \leq N
+\). Om \(
+    M = N
+\) vet vi att \(
+    H(s) = c_0 + \frac{\widetilde{B}(s)}{A(s)} 
+\) där \(
+    \text{grad}(\widetilde{B}(s)) = M-1
+\). Sen partialbråksuppdelar vi \(
+    \frac{\widetilde{B}(s)}{A(s)} 
+\) om \(
+    M=N
+\) och \(
+    \frac{B(s)}{A(s)} 
+\) direkt om \(
+    M < N
+\). Resultatet av partialbråksuppdelningen ger en summa av två typer av 
+termer beroende på om rötterna är komplexa eller reella. Varje term kan 
+sedan inverstransformeras. 
+
+Man kan skriva partialbråksuppdelningsansatsen \(
+    \frac{As+B}{{(s+\alpha)}^2 + \omega^2} 
+\) som \(
+    \frac{A(s+\alpha) + B - A \alpha}{{(s+\alpha)}^2 + \omega^2}
+    = A \frac{s+\alpha}{{(s+\alpha)}^2 + \omega^2} + \frac{B-A\alpha}{\omega} \cdot \frac{\omega}{{(s+\alpha)}^2 + \omega^2}  
+\) vilket ger inverstransformen \(
+    A \left( e^{-\alpha t} \cos(\omega t) + \frac{B-A\alpha}{\omega} e^{-\alpha t} \sin(\omega t) \right) u(t)
+\). För att den ska vara konvergera måste \(
+    \Re{s_1} = \Re{s_2} < 0
+\).
+
+För att ett kausalt system ska vara stabilt måste alla poler till \(
+    H(s)
+\) ligga i vänstra halvplanet. 
+
+\end{document}

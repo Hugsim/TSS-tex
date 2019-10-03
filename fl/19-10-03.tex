@@ -1,0 +1,192 @@
+\documentclass[a4paper]{article}
+\usepackage{../flpack}
+
+\begin{document}
+
+\providecommand\fname{}
+\renewcommand\fname{19-10-03}
+
+\subsection{Kort repetition}
+Kom ihåg att för ett LTI-system gäller att för ett system med insignal \(
+    x(t) = \sin(\omega t)
+\) och frekvenssvar (FT av impulssvaret) \(
+    G(\io)
+\) får vi utsignalen \(
+    y(t) = \abs{G(\io)} \sin(\omega t + \arg{G(\io)})
+\) i stationärtillstånd. Om man vill ha hela förloppet kan man 
+Laplacetransformera och räkna som vanligt.
+
+\subsection{Bodediagram/Bode plots}
+En grafisk presentation av frekvenssvaret:
+
+Innehåller två delar:
+\begin{itemize}
+    \item Amplituddiagram, ofta med logaritmisk frekvens- och amplitudskala 
+    (i \si{\deci\bel}). \(
+        \abs{G(\io)} = 20 \cdot \log_{10}(\abs{G(\io)})
+    \) 
+    \item Fasdiagram, ofta med logaritmisk frekvensskala men linjär fasskala 
+    (d.v.s.\ plottar mot \(
+        \arg{G(\io)}
+    \))
+\end{itemize}
+
+För att konstruera dessa diagram utgår vi ifrån en överföringsfunktion \(
+    G(s)
+\) och sätter \(
+    s=\io
+\) så att vi får \(
+    G(\io)
+\). Sedan faktoriserar vi överföringsfunktionen \(
+    G(s)
+\) så att \(
+    G(s) = \frac{C_1(s)C_2(s)\cdots C_M(s)}{D_1(s)D_2(s)\cdots C_N(s)} 
+\). Faktorerna \(
+    C_k(s)
+\) och \(
+    D_k(s)
+\) är antingen \(
+    k
+\) (en konstant), \(
+    s
+\) (derivering i täljaren, integrering i nämnaren), \(
+    1 + \frac{s}{\omega_1} 
+\) (förstagradsfaktor p.g.a.\ en reell rot) eller \(
+    1 + s \frac{2a}{\omega_2} + \frac{s^2}{\omega_2^2} 
+\) (andragradsfaktor p.g.a.\ komplexa rötter).
+
+\subsubsection{Frekvenssvarets belopp}
+\(
+    \abs{G(\io)} = \frac{\abs{C_1(s)}\abs{C_2(s)}\cdots \abs{C_M(s)}}{\abs{D_1(s)}\abs{D_2(s)}\cdots \abs{C_N(s)}}
+\). I \si{\deci\bel} är det \(
+    \abs{G(\io)}_{\si{\deci\bel}}
+        = \abs{C_1(\io)}_{\si{\deci\bel}} + \abs{C_2(\io)}_{\si{\deci\bel}} + \cdots + \abs{C_M(\io)}_{\si{\deci\bel}}
+            - \abs{D_1(\io)}_{\si{\deci\bel}} - \abs{D_2(\io)}_{\si{\deci\bel}} - \cdots - \abs{D_N(\io)}_{\si{\deci\bel}}
+\) och deras fasbidrag fås som \(
+    \arg{G(\io)} =
+    = \arg{C_1(\io)} + \arg{C_2(\io)} + \cdots + \arg{C_M(\io)}
+        - \arg{D_1(\io)} - \arg{D_2(\io)} - \cdots - \arg{D_N(\io)}
+\). Notera att superpositionen av bidragen från varje delfaktor ger både \(
+    \abs{G(\io)}_{\si{\deci\bel}}
+\) och \(
+    \arg{G(\io)}
+\).
+
+Studera \(
+    \eval{\frac{1}{1 + \frac{s}{\omega_1}}}_{s=\io} = \frac{1}{1+ i \frac{\omega}{\omega_1} } 
+\). Dess belopp är \(
+    \frac{1}{\sqrt{1 + \frac{\omega}{\omega_1}^2}} = \abs{G_1(\io)}
+\). Bodediagrammet blir då \f
+
+Argumentet för den är \(
+    \arg{G_1(\io)} = - \arctan(\frac{\omega}{\omega_1} )
+\). Bodediagrammet blir \f
+
+Lutningen på amplituddiagrammet är \(
+    -20~\frac{\si{\deci\bel}}{\text{dekad}} 
+\).
+
+\subsection{Fourierrepresentationer}
+Ordlista: CT -- Continuous time, DT -- Discrete time, FS -- Fourier series, 
+FT -- Fourier transform
+
+En tabell som beskriver vad vi använder i olika fall: 
+
+\begin{tabular}{lll}
+    Signal & Periodisk                                & Ickeperiodisk     \\ \hline
+    CT     & CTFS (\(c_k\) eller \(a_k\) och \(b_k\)) & CTFT (\(X(\io)\)) \\
+    DT     & Vi väntar med denna.                     & DTFT             
+\end{tabular}
+
+\begin{påm}[Kort repetition av sampling]
+    För \(
+        x_p(t) = p(t) \cdot x(t) 
+    \) är \(
+        X_p(\io) = \inv{T} \sum_{k=-\infty}^\infty X(i(\omega-k\omega_s))
+    \) där \(
+        \omega_2 = \frac{2\pi}{T} 
+    \) och \(
+        p(t) = \sum_{n=-\infty}^\infty \delta(t-nT)
+    \).
+\end{påm}
+
+Om vi Fouriertransformerar \(
+    x_p(t)
+\) direkt får vi 
+\begin{align*}
+    X_p(t) &= \infint x_p(t) e^{-\io t} \dd t \\
+           &= \infint \qty( \sum_{n=-\infty}^\infty x(t) \cdot \delta(t-nT) ) e^{-\io t} \dd t \\
+           &= \sum_{n=-\infty}^\infty \infint x(t) \cdot \delta(t-nT) e^{-\io t} \dd t \\
+           &= \{\qq*{Får endast bidrag} \neq 0 \qq{vid impuls, d.v.s.\ vid} t = nT\} \\
+           &= \sum_{n=-\infty}^\infty x(nT) e^{-\io nT} \infint \delta(t-nT) \dd T \\
+           &= \sum_{n=-\infty}^\infty x(nT) e^{-\io nT} \\
+           &= \{ \qq*{Låt} x(nT) = x[n] \qq{och} \omega T = \Omega \} \\
+           &= \sum_{n=-\infty}^\infty x[n]e^{-i \Omega n}
+\end{align*}
+vilket är Fouriertransformen för en ickeperiodisk diskret signal och 
+vi skriver den som \(
+    X(e^{i\Omega }) = \sum_{n=-\infty}^\infty x[n]e^{-i \Omega n}
+\). Kallas Diskret Tid FourierTransform och förkortas DTFT. Kursboken använder 
+beteckningen \(
+    X(\Omega)
+\) men det är \enquote{bättre} med konventionen ovan eftersom det matchar 
+bättre mot z-transformen senare i kursen.
+
+\subsubsection{Egenskaper}
+\(
+    X(e^{\iO})
+\) är\dots
+\begin{itemize}
+    \item kontinuerlig i \(
+        \Omega
+    \).
+
+    \item periodisk i \(
+        \Omega
+    \) eftersom \(
+        X(e^{i(\Omega + 2 \pi k)}) 
+            = \sum_{n=-\infty}^\infty x[n] e^{-i(\Omega + 2 \pi k) n}
+            = \sum_{n=-\infty}^\infty x[n] e^{-i\Omega n} \cdot e^{-i2\pi k n}
+            = \sum_{n=-\infty}^\infty x[n] e^{-i\Omega n} 
+            = X(e^{\iO})
+    \) 
+\end{itemize}
+
+Alltså är \(
+    x[n]
+\) innan DTFT både diskret och icke-periodisk, men \(
+    X(e^{\iO})
+\) är både kontinuerlig och periodisk.
+
+Kom ihåg hur Fouriertransformen för vårt viktade impulståg \(
+    x_p(t)
+\) såg ut: \f
+
+Den är också periodisk, men i \(
+    \omega
+\) och med \enquote{perioden} \(
+    \omega = \omega_s
+\). Men \(
+    \Omega = \omega T
+\) vilket vid \(
+    \Omega = 2 \pi 
+\) ger \(
+    \omega = \frac{2\pi}{T} = \omega_s
+\) eftersom \(
+    T
+\) är samplingsintervallet. \(
+    \Omega = 2\pi
+\) motsvarar samplingsvinkelfrekvensen. \(
+    e^{\iO n} = \cos(\Omega n) + i \sin(\Omega n)
+\). Enheten för \(
+    \Omega
+\) är då \si{\radian} alt \(
+    \frac{\si{\radian}}{\text{sampel}}
+\). 
+
+\subsection{Syntesekvation/Invers DTFT}
+\(
+    x[n] = \int_{2\pi} X(e^{\iO}) e^{i\Omega n} \dd \Omega
+\).  
+
+\end{document}

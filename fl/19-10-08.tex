@@ -1,0 +1,203 @@
+\documentclass[a4paper]{article}
+\usepackage{../flpack}
+
+\begin{document}
+
+\providecommand\fname{}
+\renewcommand\fname{19-10-08}
+
+\subsection{Mer DTFT och DFT}
+\begin{ex}
+    Beräkna DTFT för signalen \(
+        x[n] = \alpha^n u[n]
+    \) för något \(
+        0 < \alpha < 1
+    \).
+
+    \begin{align*}
+        X(e^{\iO}) &= \sum_{n=0}^\infty \alpha^n e^{-\iO n} \\
+            &= \sum_{n=0}^\infty {(\alpha e^{-\iO})}^n \\
+            &= \{ \text{Geometrisk summa} \} \\
+            &= \inv{ 1 - \alpha e^{-\iO} } \\
+            &= \inv{ 1 - \alpha ( \cos(\Omega) - i \sin(\Omega) ) } \\
+            &= \inv{ 1 - \alpha \cos(\Omega) + i \alpha \sin(\Omega) }
+    \end{align*}
+
+    \begin{align*}
+        \abs{X(e^{\iO})} &= \inv{ \sqrt{ \abs{1- \alpha \cos \Omega }^2 + \abs{\alpha \sin \Omega}^2 } } \\
+            &= \inv{ \left( 1-2\alpha \cos \Omega + \alpha^2 \cos^2(\Omega) + \alpha^2 \sin \Omega \right)^{\half} } \\
+            &= \inv{ \sqrt{1 + \alpha^2 - 2 \alpha \cos \Omega} }
+    \end{align*}
+
+    \begin{align*}
+        \arg{X(e^{\iO})} &= - \arctan( \frac{\alpha \sin \Omega}{1 - \alpha \cos \Omega} )
+    \end{align*}
+\end{ex}
+
+För motsvarade kontinuerliga signal \(
+    x(t) = e^{-iat}u(t)
+\) har vi Fouriertransformen \(
+    X(\io) = \inv{a-\io}
+\), med \(
+    \abs{X(\io)} = \inv{\sqrt{a^2+\omega^2}}
+\) och \(
+    \arg{X(\io)} = - \arctan{\frac{\omega}{a}}
+\). Vi ser att \(
+    \abs{X(\io)} \) upprepas periodiskt i \(
+        X(e^{\iO})
+\).
+
+Genom att välja lämplig samplingsfrekvens kan effekten av aliassing minskas 
+och \(
+    X(e^\iO)
+\) återfinns, i princip, i \(
+    X(e^\iO)
+\) på intervallet \(
+    \pi < \Omega < \pi
+\).
+
+För numeriska beräkningar är det opraktiskt med kontinuerliga funktioner
+såsåom \(
+    X(e^{\iO})
+\). Vad gör vi? Beräkna \(
+    X(e^\iO)
+\) endast för vissa frekvenser i intervallet \(
+    0 \leq \Omega \leq 2\pi
+\). Vi väljer ett \(
+    \Omega_k = \frac{2\pi}{N} k
+\) där \(
+    k = 0, 1, \dots, N-1
+\). Vi landar nu i det som kallas DFT (Diskret Fouriertransform). Den används
+flitigt och har stor praktisk betydelse. Ytterligare en viktig aspekt
+är att vi inte kan summera till oändligheten och därmed inte ha hur långa signaler 
+som helst. Vi måste välja ut en representativ del. \(
+    x[n] 
+\) där \(
+    n = 0, 1, \dots,N_{\text{max}}-1
+\). 
+
+\subsection{Diskret Fouriertransform (DFT)}
+En godtycklig icke-periodisk och diskret signal \(
+    x[n]
+\) har Fouriertransformen \(
+    X(e^\iO) = \sum_{n=-\infty}^\infty x[n] e^{-\iO n}
+\). \(
+    X(e^\iO)
+\) är kontinuerlig i \(
+    \Omega
+\) och \(
+    2\pi
+\)-periodisk i \(
+    \Omega
+\). 
+
+\subsubsection{Syntesekvation/Invers DTFT}
+\[
+    x[n] = \inv{2\pi} \int_{2\pi} X(e^{\iO}) e^{\iO n} \dd \Omega
+\]
+
+Det är en superposition av bassignaler \(
+    e^{\iO n} = \cos(\Omega n) + i \sin(\Omega n)
+\) med vikter \(
+    X(e^{\iO})
+\). Rent praktiskt kan vi bara hantera signaler \(
+    x[n]
+\) med ändlig längd. Dessutom är det najs om även transformen \(
+    X
+\) är diskret vilket skulle göra det rimligt för datorer att beräkna DTFT.
+
+En alternativ Fouerirerepresentation har därför utvecklats, DFT.
+Det som är viktigt med den är att \(
+    DFT\{ x[n] \}
+\) är diskret och att DFT motsvarar \enquote{samplade} värden av \(
+    X(e^\iO)
+\) på intervallet \(
+    0 \leq \Omega < 2\pi
+\). 
+
+Effektiva beräkningsalgoritmer för att beräkna DFT kallas FFT 
+(Fast Fourier Transform). 
+
+Nu till DFT! Vi har tillgång till (eller väljer) \(
+    L
+\) stycken värden (sampel) i vår signal \(
+    x[n]
+\) där \(
+    n = 0, 1, \dots, L-1
+\), men ofta har vi ju bara samplat en kontinuerlig signal \(
+    x(nT)
+\). Signalens DTFT är då \(
+    X(e^\iO) = \sum_{n=-\infty}^\infty x[n] e^{-\iO n}
+        = \sum_{n=0}^{L-1} x[n] e^{-\iO n}
+\). Det är en ändlig summa, vilket är bra, men det finns fortfarande 
+oändligt många \(
+    \Omega
+\) vilket är dumt. Låt oss ta \(
+    N
+\) stycket avläsningar/sampel av \(
+    X(e^\iO)
+\) och gör beräkningar för \(
+    \Omega_k = \frac{2\pi}{N} k
+\) där \(
+    k = 0, 1, \dots, N-1
+\). Beteckna dessa sampel med \(
+    X[k] = X(e^\iO) 
+\) där \( 
+    \Omega = \frac{2\pi}{N} k 
+\) vilket ger att \[
+    X[k] 
+        = \sum_{n=0}^{L-1} x[n] e^{-i \frac{2\pi}{N} k n}.
+\] 
+
+Man kan visa att \(
+    x[n]
+\) kan återskapas ur \(
+    X[k]
+\) om \(
+    N \geq L
+\). Då får man \[
+    x[n] = \inv{N} \sum_{k=0}^{N-1} X[k] e^{i \frac{2\pi}{N} k n}
+\] 
+
+Vi har då ett transformpar \(
+    x[n] \xleftrightarrow{\text{DFT} } X[k]
+\).
+
+Det är vanligt att vi låter \(
+    L = N
+\) och att de är en jämn tvåpotens, för det behöver FFT för att funka.
+
+\subsubsection{Frekvenser hos en samplad signal}
+
+Kom ihåg att \(
+    T
+\) är vårt sampelintervall, att \(
+    \Omega = \omega \cdot T
+\), att \(
+    \omega
+\) är den kontinuerliga signalens vinkelfrekvens i \si{\radian\per\second}. 
+Då har \(
+    \Omega
+\) enheten \si{\radian}. \(
+    \Omega_k = \frac{2\pi}{N} k
+\) där \(
+    k = 0, 1, \dots, N-1
+\) vilket med \(
+    \omega = \frac{\Omega}{T} 
+\) ger att \(
+    \omega_k = \frac{\Omega_k}{T} 
+        = \frac{2\pi}{N} \inv{T} k
+        = \frac{2\pi}{T} \frac{k}{N} 
+        = \frac{\omega_s}{N} k
+\) där \(
+    \omega_s
+\) är samplingsvinkelfrekvensen. Om vi uttrycker samplingsfrekvensen i 
+\si{\hertz} som \(
+    F_s
+\) är \(
+    \omega_s = 2\pi F_s
+\) vilket ger att \(
+    \omega_k = \frac{2\pi F_s}{N} k 
+\) vilket återkommer i labben. 
+
+\end{document}

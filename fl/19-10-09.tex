@@ -1,0 +1,155 @@
+\documentclass[a4paper]{article}
+\usepackage{../flpack}
+
+\begin{document}
+
+\providecommand\fname{}
+\renewcommand\fname{19-10-09}
+
+\subsection{Sammanfattning}
+\begin{table}[]
+    \begin{tabular}{llllllllll}
+        \(X(\io)\)     & \(\xleftrightarrow{\text{FT}}\) & \(x(t)\)       & \(\xrightarrow{\text{Sampling}}\) & \(X[n]\)       & \(\xleftrightarrow{\text{DTFT}}\) & \(X(e^{\iO})\) & \(\xdashrightarrow{\Omega = \Omega_k = \frac{2\pi}{N}k}\) & \(X[k]\)  &  \\
+        Kont.   &                             & Kont.   &                               & Diskret        &                               & Kont.  &                                                       & Diskret   &  \\
+        Icke-per. &                             & Icke-per. &                               & Icke-per. &                               & Per.     &                                                       & Per. &  \\
+                    &                             &                &                               &                &                               &               &                                                       & DFT/FFT   & 
+    \end{tabular}
+\end{table}
+
+Den kontinuerliga signalens Fouriertransform kan erhållas ur den samplade 
+signalens Fouriertransform med \(
+    \abs{\Omega} < \pi
+\) om effekten av aliasing kan göras tillräckligt liten. 
+
+\subsection{Mer om DFT: Samband mellan \(
+    k
+\), \(
+    \omega
+\) och \(
+    \Omega
+\)}
+
+\(
+    x(t) = \sin(\omega t)
+\) samplas vid \(
+    t = nT \implies x[n] = \sin(\omega T n) = \sin(\Omega n)
+\). 
+
+\subsubsection{DFT:s frekvensaxel}
+Kan vara mot \(
+    \Omega = \frac{2\pi}{N} k
+\), \(
+    k
+\), \(
+    \omega = \text{(Om } \Omega = 2\pi \text{)} \implies \omega = \frac{2\pi}{T} = \omega_s
+\) eller \(
+    f_s = \frac{\omega_s}{2\pi} 
+\) i \(
+    \si{\hertz} 
+\), beror lite på.
+
+\f
+
+Notera uppbyggnaden av syntesekvationen för DFT som ger \(
+    x[n]
+\) utifrån \(
+    X[k]
+\). Den är ju \(
+    x[n] = \inv[N] \sum_{k=0}^{N-1} X[k] e^{i \frac{2\pi}{N} k n}
+\), vilket är en superposition av basfunktionen \(
+    e^{i \frac{2\pi}{N} k n}
+\) vilket vi kallar för \(
+    \phi_k[n]
+\) med viktfunktionen \(
+    X[k]
+\). Några egenskaper för \(
+    \phi_k[n]
+\), där \(
+    k,n\in \intn
+\), är att 
+\begin{itemize}
+    \item \(
+        \phi_k[n+N] = e^{i \frac{2\pi}{N} k (n+N)} 
+            = e^{j \frac{2\pi}{N} kn} \cdot e^{j \frac{2\pi}{N} kN}
+            = \phi_k[n] \cdot 1
+            = \phi_k[n]
+    \), alltså är den periodisk i \(
+        n
+    \) med perioden \(
+        N
+    \).
+
+    \item \(
+        \phi_{k+N}[n] = e^{i \frac{2\pi}{N} (k+N)n} 
+        = e^{j \frac{2\pi}{N} kn} \cdot e^{j \frac{2\pi}{N} nN}
+        = \phi_k[n] \cdot 1
+        = \phi_k[n]
+    \), alltså är den också periodisk i \(
+        k
+    \)  med perioden \(
+        N
+    \). 
+\end{itemize}
+
+Det finns alltså bara \(
+    N
+\) stycken unika bassignaler, d.v.s.\ \(
+    \phi_0[n] = \phi_N[n]
+\), \(
+    \phi_1[n] = \phi_{N+1}[n]
+\) o.s.v.
+
+Om det är ett heltal antal perioder i samplingen ger det exakt vilket \(
+    k
+\) som ensamt bidrar. Både \(
+    k
+\) och \(
+    -k = N - k
+\) finns med. 
+
+\dquote{Det ser regelbundet ut, vilket jag är tacksam för.}{Ants om sin EKG}
+
+\subsection{Introduktion till \(
+    z
+\)-transformen}
+
+Låt \(
+    z
+\) vara en komplex variabel, alltså är \(
+    z = a + bi = r e^{\iO}
+\). Kom också ihåg att \(
+    z^n = (re^\iO)^n 
+        = r^n e^{\iO \cdot n} 
+        = r^n(\cos(\Omega n) + i \sin(\Omega n))
+\). Låt \(
+    z^n
+\) utgöra insignal till ett diskret LTI-system med impulssvar \(
+    h[n]
+\). Faltningssumman ger att \(
+    y[n] = h[n] * x[n] 
+        = \sum_{k=-\infty}^{\infty} h[k] \cdot x[n-k]
+        = \sum_{k=-\infty}^\infty h[k] \cdot z^{n-k} 
+        = \sum_{k=-\infty}^\infty h[k] \cdot z^n z^{-k}
+        = z^n \sum_{k=-\infty}^\infty h[k] \cdot z^{-k}
+        \coloneqq z^n \cdot H(z) = \mathcal{z}\{h[n]\} % Konstigt z?
+\) där \(
+    H(z)
+\) är \(
+    z
+\)-transformen av \(
+    h[n]
+\). 
+
+\begin{defn}[\(
+    z
+\)-transformen]
+    \(
+        z
+    \)-transformen av den diskreta signalen \(
+        x[n]
+    \) är \(
+        X(z) = \sum_{k=-\infty}^\infty x[k] z^{-k}
+    \).
+\end{defn}
+
+\end{document}

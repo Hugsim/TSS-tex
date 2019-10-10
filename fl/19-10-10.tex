@@ -1,0 +1,348 @@
+\documentclass[a4paper]{article}
+\usepackage{../flpack}
+
+\begin{document}
+
+\providecommand\fname{}
+\renewcommand\fname{19-10-10}
+
+\subsection{Transformer i allmänhet}
+Kom ihåg att Fourierkoefficienterna för en Fourierserie ges av \[
+    c_k(f) = \inv{T} \int_0^T f(t) e^{-jk\omega_0 t} \dd t.
+\] 
+
+Kom också ihåg att för periodiska \(
+    y
+\), \(
+    h
+\) och \(
+    x
+\) som har sambandet \(
+    y(t) = h*x(t)
+\) är \(
+    c_k(y) = c_k(h) \cdot c_k(x)
+\) för alla \(
+    k
+\).
+
+Kom utöver det också ihåg att \(
+    c_k(x') = i k c_k(x)
+\).
+
+En transform är något som tar en signal \(
+    f
+\) till en ny beskrivning för \(
+    f
+\).
+
+\subsection{z-transform}
+Låt \(
+    x[k]
+\) vara en diskret signal. Den ska vi \enquote{skicka på en funktion} av en 
+komplex variabel \(
+    X(z) \coloneqq \sum_{k=-\infty}^\infty x[k] z^{-k}
+\). 
+
+Om \(
+    f
+\) är en \(
+    T
+\)-periodisk kontinuerlig signal och \(
+    x[k] = c_k(f)
+\) så är \(
+    X(z) = \sum_{k=-\infty}^\infty c_k(f) z^{-k}
+\). Om vi väljer \(
+    z = e^{-i \frac{2\pi}{T} t}
+\) så är \(
+    X(e^{-i \frac{2\pi}{T} t}) = f(t)
+\). Därav är z-transformen i någon mån en inverstransform till Fourierserier.
+
+\begin{påst}
+    Låt \(
+        x[k]
+    \) vara en diskret signal. Anta att det finns tal \(
+        0 < c_0 < c_1 < \infty 
+    \) så att \(
+        \abs{x[k]} \leq c_0^k 
+    \) för \(
+        k >> 0
+    \) och \(
+        \abs{x[k]} \leq c_1^k 
+    \) för \(
+        k << 0
+    \). Då är \(
+        X(z)
+    \) väldefinierad och absolutkonvergent för \(
+        c_0 < \abs{z} < c_1
+    \).
+
+    \begin{proof}
+        Idén för beviset är att visa att \(
+            \abs{X(z)} \leq \sum_{k=-\infty}^\infty \abs{x[k]} \abs{z}^k
+        \) konvergerar.
+    \end{proof}
+\end{påst}
+
+Vi kommer att anta att \(
+    x[k]=0
+\) för \(
+    k < 0
+\), d.v.s.\ det kausala fallet. 
+
+Då är \(
+    X(z) = \sum_{k=0}^\infty x[k]z^{-k}
+\). Om \(
+    \abs{x[k]} \leq c^k
+\) för \(
+    k >> 0
+\) gäller att \(
+    X(z)
+\) finns för \(
+    \abs{z} > c
+\).
+
+\begin{ex}
+    Låt \(
+        x[k] = \delta(k-l)
+    \) där \(
+        l \geq 0
+    \).
+
+    Då är \(
+        X(z) = \sum_{n=0}^\infty \delta(n-l) z^{-n}
+            = z^{-l}
+    \). 
+\end{ex}
+
+\begin{ex}
+    Låt \(
+        x_\gamma[k] = \gamma^k u[k]
+    \) där \(
+        \gamma \in \compn \setminus \{0\}
+    \).
+
+    Då är \(
+        X_\gamma(z) = \sum_{k=0}^\infty \gamma^k z^{-k}
+            = \sum_{k=0}^\infty \left(\frac{\gamma}{z} \right)^k
+            = \frac{1}{1-\frac{\gamma}{z}} 
+    \) vilket bara konvergerar om \(
+        \frac{\gamma}{z} < 1
+    \) enligt påminnelsen nedan, vilket ger att den konvergerar om \(
+        \abs{z} > \abs{\gamma}
+    \). Då får vi \(
+        \frac{1}{1-\frac{\gamma}{z}} = \frac{z}{z-\gamma} 
+    \).
+\end{ex}
+
+\begin{påm}
+    \(
+        \frac{1}{1-w} = \sum_{k=0}^\infty w^k
+    \) och \(
+        \sum_{k=0}^N w^k = \frac{1-w^{N+1}}{1-w} 
+    \). Den första konvergerar för \(
+        \abs{w} < 1
+    \).
+\end{påm}
+
+\begin{ex}
+    Finn en diskret och kausal signal \(
+        h_\gamma
+    \) med \(
+        X(z) = \frac{1}{z-\gamma} 
+    \).
+
+    Om vi tar \(
+        x_\gamma
+    \) från exemplet ovan får vi att \(
+        X_\gamma(z) = \frac{z-\gamma+\gamma}{z-\gamma} 
+            = 1 + \frac{\gamma}{z-\gamma} 
+    \) vilket ger att \(
+        h_\gamma = \inv{\gamma} \left( x_\gamma - \delta_0 \right)
+    \), d.v.s.\ \(
+        h_\gamma[k] = 
+        \left\{\begin{matrix}
+            \gamma^{k-1} & k > 0 \\ 
+            0 & k = 0 
+        \end{matrix}\right. 
+        = x_\gamma[k-1]u[k]
+    \).
+\end{ex}
+
+\subsection{Syntes för z-transform}
+\begin{sats}[Syntes för z-transformen]
+    \[
+        x[k] = r^k \int_0^1 X(re^{2\pi i t}) e^{2\pi i k t} \dd t
+    \] där \(
+        r
+    \) är något tal s.a.\ \(
+        X(z) 
+    \) är definierat för \(
+        \abs{z} \geq r
+    \).
+
+    \begin{proof}
+        \begin{align*}
+            x[k] &= \int_0^1 X(re^{2\pi i t}) e^{2\pi i k t} \dd t \\
+                 &= \int_0^1 \sum_{n=0}^\infty x[n] r^{-n} e^{-2\pi int} 
+                    e^{2\pi ikt} \\
+                 &= \sum_{n=0}^\infty x[n] r^{-n} \int_0^1 e^{2\pi ikt} \\
+                 &= x[k]r^{-k}
+        \end{align*}
+        eftersom integralen är \(
+            0 
+        \) för \(
+            k \neq n
+        \) och \(
+            1
+        \) för \(
+            k = n
+        \).
+    \end{proof}
+\end{sats}
+
+\subsection{Viktiga egenskaper för z-transformen}
+Z-transformen är linjär, d.v.s.\ \(
+    x_1 + \lambda x_2 \xleftrightarrow{z} X_1 + \lambda X_2
+\).
+
+För ett vänsterskifte, d.v.s.\ om vi låter \(
+    x_s[k] = x[k+1] u[k]
+\) så har vi transformparet \(
+    x_s[k] = x[k+1] u[k] \xleftrightarrow{z} z(X(z) - x[0])
+\).
+
+Högerskifte, d.v.s.\ \(
+    x_s[k] = x[k-1] 
+\) ger transformparet \(
+    x_s[k] = x[k-1] \xleftrightarrow{z} \frac{1}{z} X(z)
+\).
+
+Slutvärdessats för z-transformen säger att \(
+    x[0] = \lim_{\abs{z}\to \infty} x[z]
+\).
+
+Motsvarande initialvärdessats säger att, givet att \(
+    x[k] 
+\) är begränsad och att \(
+    \lim_{k \to \infty} x[k] 
+\) existerar, då är \(
+    \lim_{h\to\infty} x[k] = \lim_{z \to 1}(z-1)X(z)
+\).
+
+\begin{ex}
+    Låt \(
+        x[k] = u[k]
+    \). Det är då transformpar med \(
+        \frac{z}{z-1} 
+    \). Vi vet då också att \(
+        1 = \lim_{k\to\infty} u[k] = \lim_{z\to 1} (z-1) \frac{z}{z-1} 
+    \).
+\end{ex}
+
+\(
+    \gamma^k x[k]
+\) bildar transformpar med \(
+    X(\frac{z}{\gamma} )
+\) eftersom \(
+    \sum_{k=0}^\infty \gamma^k x[k] z^{-k} 
+        = \sum_{k=0}^\infty \gamma^k x[k] \left(\frac{z}{\gamma}\right)^{-k} 
+\).
+
+\(
+    kx[k]
+\) bildar transformpar med \(
+    -z \dv{z} X(z)
+\), idén bakom är att \(
+    -z \dv{z} X(z) = -z \cdot (-k z^{k-1}) = k z^{-k}
+\).
+
+\(
+    x_1 * x_2 \xleftrightarrow{z} X_1X_2
+\) eftersom \(
+    \sum_{k=0}^\infty (x_1*x_2)[k] z^{-k}
+        = \sum_{k=0}^\infty \sum_{l=0}^k x_1[k-l]x_2[l] z^{-k}
+        = \sum_{m,l=0}^\infty x_1[m]x_2[l] z^{-(m+l)}
+        = \sum_{m=0}^\infty x_1[m] z^{-m} \cdot \sum_{l=0}^\infty x_1[l] z^{-l}
+\).
+
+För en diskret och kausal LTI \(
+    y = h*x \iff Y = HX
+\).
+
+\begin{ex}
+    Låt \(
+        x[k] = \gamma^k
+    \). 
+    
+    Då är \(
+        h*x[l] = \sum_{m} h[m] \gamma^{l-m}
+            = \gamma^l \sum_m h[m] \gamma^{-m}
+            = \gamma^l H(\gamma)
+            = H(\gamma) x[l]
+    \).
+\end{ex}
+
+\begin{ex}
+    Låt \(
+        x[k] = \gamma^k \cos(\beta k) u[k]
+    \).
+
+    Vi börjar med att anta att \(
+        \gamma = 1
+    \). Då är \(
+        x[k] = \half \left( e^{i\beta k} + e^{-i\beta k} \right) u[k]
+             = \half \left( {(e^{i\beta})}^k + {(e^{-i\beta})}^k \right) u[k]
+    \). Då bildar det transformpar med \(
+        \inv{z} \left( \frac{z}{z-e^{i\beta k}} + \frac{z}{z-e^{-i\beta k}} \right)
+    \). 
+
+    Om \(
+        \gamma \neq 1
+    \) får vi att \(
+        \gamma^k \cos(\beta k) u[k] 
+    \) bildar transformpar med \(
+        \half \left( \frac{{\frac{z}{\gamma}}}{{\frac{z}{\gamma}}-e^{i\beta k}} + \frac{{\frac{z}{\gamma}}}{{\frac{z}{\gamma}}-e^{-i\beta k}} \right)
+            = \dots 
+    \) Man kan göra mer algebra för att få något \enquote{finare} om man vill.
+\end{ex}
+
+\subsection{Differensekvationer}
+Vi vill lösa \(
+    y[k+1] + ay[k] = x[k]
+\) med villkoret att \(
+    k\geq 0
+\) och att \(
+    y[0]
+\) är given. 
+
+Notera att det är på formen \(
+    Q(E)y = P(E)x
+\) där \(
+    E 
+\) är vänsterskifte och \(
+    Q(z) = z + a
+\) och \(
+    P(z) = 1
+\).
+
+\(
+    Ey[k] = y[k+1]u[k] \xleftrightarrow{z} = z Y(z)-zy[0]
+\) ger att \(
+    Q(E)y[k] \xleftrightarrow{z} z Y(z) - zy[0] + a Y(z)
+        = (z+a)Y(z)-zy[0]
+        = Q(z)Y(z)-zy[0]
+\).
+
+\(
+    Q(E)y = P(E)x 
+        \iff Q(z)Y - zy[0] = X(z)
+        \iff Y(z) = \inv{Q(z)} X(z) + \frac{z}{Q(z)} y[0]
+            = \frac{1}{z+a} X(z) + \frac{z}{z+a} y[0]
+        \iff y[k] = h_a*x[k] + (-a)^k y[0]
+            = \left(\sum_{l=0}^k (-a)^{l-1} x[k-l]\right) + (-a)^k y[0]
+\). Sista \(
+    \iff
+\)-steget görs genom z-transformstabeller. 
+Resten lämnas som övning till läsaren.
+
+\end{document}

@@ -1,0 +1,378 @@
+\documentclass[a4paper]{article}
+\usepackage{../flpack}
+
+\begin{document}
+
+\providecommand\fname{}
+\renewcommand\fname{19-10-10}
+
+\subsection{Mer z-transform}
+Låt \(
+    x[k]
+\) vara en diskret signal. Då är \(
+    X(z) \coloneqq \sum_{k=-\infty}^\infty x[k] z^{-k}
+\).
+
+\begin{ex}
+    \(
+        \delta(k-l) \xleftrightarrow{\mathcal{z}} z^{-l}
+    \) 
+\end{ex}
+
+\begin{ex}
+    \(
+        \gamma^k u[k] \xleftrightarrow{\mathcal{z}} \frac{z}{z-\gamma} 
+    \) om \(
+        \abs{z} > \abs{\gamma}
+    \) 
+\end{ex}
+
+\begin{ex}
+    \(
+        \gamma^{k-1} \xleftrightarrow{\mathcal{z}} \frac{1}{z-\gamma} 
+    \) 
+\end{ex}
+
+\subsubsection{Räkneregler}
+\(
+    x[k+1]u[k] \xleftrightarrow{\mathcal{z}} z (X(z) - x[0])
+\) 
+
+\(
+    x[k-1] \xleftrightarrow{\mathcal{z}} \inv{z} X(z)
+\) 
+
+\(
+    \gamma^k x[k] \xleftrightarrow{\mathcal{z}} X(\frac{z}{\gamma})
+\) 
+
+\(
+    x_1*x_2 \xleftrightarrow{\mathcal{z}} X_1 X_2
+\) 
+
+Vi börjar med lite kontext. Om \(
+    f(t)
+\) är en kontinuerlig signal och \(
+    D = \dv{t}
+\). Då är \(
+    D f(t) \approx \frac{f(t+h) - f(t)}{h} 
+\) för små \(
+    h
+\). Vi definierar \(
+    x[k] \coloneqq f(hk)
+\). Då är \(
+    D \approx \frac{1}{h} (E-1)
+\) där \(
+    Ex[k] = x[k+1]
+\). En differentialekvation är på formen \(
+    Q(D)f = P(D)g
+\) vilket genom approximering som ovan ger en differensekvation \(
+    Q\qty(\frac{E-1}{h} ) x_f = P\qty(\frac{E-1}{h} ) x_g
+\).
+
+\subsection{Frekvenssvar}
+Låt \(
+    y = h*x
+\) vara ett LTI-system. Förra gången såg vi att \(
+    h * z^k = H(z) \cdot z^k
+\). Om vi tar \(
+    z = e^{\iO}
+\) och \(
+    x[k] = e^{\iO k}
+\) får vi \(
+    h * x[k] = H(e^{\iO k}) x[k]
+\). Vi brukar kalla \(
+    H
+\) i den ekvationen för frekvenssvar.
+
+\subsubsection{Reell form}
+Låt \(
+    x[k] = \cos (\Omega k + \beta)
+\) där \(
+    \Omega, \beta \in \realn
+\). Då är \(
+    h*x[k] = \half h*e^{i(\Omega k + \beta)} + \half h*e^{-i(\Omega k + \beta)}
+        = \half \qty( H(e^{\iO }) e^{j(\Omega k + \beta)} + H(e^{-\iO}) e^{-j(\Omega k + \beta)} )
+        = \{ \text{om } h \text{ reell är } H(\overline{z}) = \overline{H(z)} \}
+        = \half \qty( H(e^{\iO }) e^{j(\Omega k + \beta)} + \overline{H(e^{-\iO}) e^{-j(\Omega k + \beta)} })
+        = \Re(\abs{H(e^{\iO})} e^{i(\Omega k + \beta) + i \angle H(e^\iO)})
+        = \abs{H(e^\iO)} \cos(\Omega k + \beta + \angle H(e^\iO))
+\).
+
+\subsubsection{Koppling till DFT}
+Om \(
+    x[k]
+\) är en \(
+    N
+\)-periodisk och kausal signal, d.v.s.\ \(
+    x[k+N] = x[k] \; \forall \; k \geq 0
+\) och \(
+    x[k] = 0
+\) för \(
+    k < 0
+\).
+
+Då är \(
+    Fx[k] = \sum_{k=0}^{N-1} x[k] e^{-i \frac{2\pi}{N} kl}
+\).
+
+\(
+    X(z) = \sum_{k=0}^\infty x[k] z^{-k}
+         = \{ k = nN+m \}
+         = \sum_{n=0}^\infty \sum_{m=0}^{N-1} x[m] z^{-nN-m}
+         = \sum_{n=0}^\infty z^{-nN} \sum_{m=0}^{N-1} x[m]z^{-m}
+         = \{\text{Geometrisk summa}\} 
+         = \frac{1}{1-z^{-N}} \cdot \sum_{m=0}^{N-1} x[m]z^{-m}
+\). Alltså är \(
+    Fx[l] = (1-z^{-N})X(z)
+\) för \(
+    z = e^{i \frac{2\pi}{N} l}
+\).
+
+\subsection{Differensekvationer}
+Låt \(
+    Q = z^n + a_{n-1} z^{n-1} + \cdots + a_1 z + a_0
+\), \(
+    P = b^n z^n + b_{n-1} z^{n-1} + \cdots + b_1 z + b_0
+\) och \(
+    Ey[k] = y[k+1]
+\). 
+
+Differensekvationer kan i allmänhet skrivas \(
+    \left\{\begin{matrix}
+        Q(E) y[k] = P(E)x[k] & k \geq 0 \\ 
+        x \text{ given och } y[k] \text{ givna för } k = -n, -n+1, \dots, -2, -1 & ~
+    \end{matrix}\right.
+\).
+
+\(
+    Q(E)y = P(E)x \iff y[k] + a_{n-1}y[k-1] + \cdots + a_1 y[k-n+1] + a_0 y[k-n]
+          = b_n x[k] + b_{n-1} x[k-1] + \cdots + b_1 x[k-n+1] + b_0 x[k-n]
+\) vilken vi delar upp i två ekvationer, zero-state (partikulärlösning) (\(
+    Q(E)y_0[k] = P(E)x[k]
+\) där \(
+    y_0[k] = 0
+\)) och zero-input (homogenlösning) (\(
+    Q(E) y_{in}[k] = 0
+\) där \(
+    y_{in}[k] = y[k]
+\)). 
+
+\begin{ex}
+    Vi börjar med att lösa ett exempel på zero-input.
+
+    Låt \(
+        Q(z) = z^2+a_1z+a_0
+    \), d.v.s.\ vi vill lösa \(
+        y[k] + a_1y[k-1]+a_0y[k-2] = 0
+    \) och vi har \(
+        y[-2], y[-1]
+    \) givna.
+
+    Idén är att använda z-transformen.
+
+    differensekvationen ovan ger \(
+        0   = \sum_{k=0}^\infty (y[k] + a_1y[k-1] +a_0y[k-2]) z^{-k}
+            = \sum_{k=0}^\infty y[k]z^{-k} 
+                + \sum_{k=1}^\infty a_1y[k-1] z^{-k}
+                + \sum_{k=2}^\infty a_0y[k-2] z^{-k}
+                + a_1y[-1] z^0 + a_0y[-2]z^0 + a_0 y[-1] z^{-1}
+            = \sum_{k=0}^\infty y[k]z^{-k} 
+                + \sum_{k=0}^\infty a_1y[k] z^{-k-1}
+                + \sum_{k=0}^\infty a_0y[k] z^{-k-2}
+                + a_1y[-1] z^0 + a_0y[-2]z^0 + a_0 y[-1] z^{-1}
+            = Y(z) + a_1 \inv{z} Y(z) + a_0 \inv{z^2} Y(z)
+            = \inv{z^2} \qty( Q(z) Y(z) + (a_1y[-1] + a_0y[-2]) z^2 + a_0y[-1]z)
+    \) vilket ger att \(
+        Y(z) = \inv{Q(z)} ((a_1y[-1] + a_0y[-2]) z^2 + a_0y[-1]z)
+             = \frac{\alpha z^2 + \beta z}{Q(z)} 
+    \) (Där \(
+        \alpha = a_1y[-1] + a_0y[-2]
+    \) och \(
+        \beta = a_0y[-1]
+    \)) \(
+        = \frac{\alpha z^2+\beta z}{(z-z_+) (z-z_-)} 
+    \). Lösningen fås genom att ansätta \(
+        y[k] = 
+        \left\{\begin{matrix}
+            Az_+^k + Bz_-^k & \text{om } z_+ \neq z_-  \\ 
+            Az_+^k + Bkz_+^k & \text{om } z_+ = z_- 
+        \end{matrix}\right.
+    \). \(
+        A
+    \) och \(
+        B
+    \) hittas genom \(
+        Az_+^{-1} + Bz_-^{-1} = y[-1]
+    \) och \(
+        Az_+^{-2} + Bz_-^{-2} = y[-2]
+    \).
+
+    (\(
+        z_+
+    \) och \(
+        z_-
+    \) är lösningar till \(
+        Q(z) = 0
+    \))
+
+    Nu löser vi zeroinput för \(
+        Q(z) = z^2 + a_1z + a_0
+    \). För att få fram lösningen utvidgar vi \(
+        x 
+    \) och \(
+        y_0
+    \) till kausala signaler så att \(
+        Q(E)y = P(E)x
+            \implies Y_0(z) \qty( 1 + \frac{a_{n-1}}{2} + \frac{a_{n-2}}{2} + \cdots + \frac{a_0}{2} ) 
+                = X(z) \qty( b_n + \frac{b_{n-1}}{2} + \frac{b_{n-2}}{2} + \cdots + \frac{b_0}{2} ) 
+    \) vilket om vi multiplicerar med \(
+        z^n
+    \) ger \(
+        Q(z)Y_0(z) = P(z)X(z)
+    \), d.v.s.\ \(
+        Y_0(z) = H(z)X(z)
+    \) där \(
+        H(z) = \frac{P(z)}{Q(z)} 
+    \) \(
+        \iff y_0[k] = h*x[k]
+    \) där \(
+        h
+    \) har z-transform \(
+        H
+    \).
+
+    \(
+        H(z)
+    \) är en rationell funktion, d.v.s.\ kvoten av två polynom, vilket ger
+    att man får partialbråksuppdela och algebra-a sig till termer vi vet 
+    hur man invers-z-transformerar.
+
+    \begin{påst}
+        Om \(
+            H(z) = \frac{P(z)}{Q(z)} 
+        \) där \(
+            \text{deg}(P) \leq \text{deg}(Q) = n 
+        \) så är \(
+            h[k] = b_n \delta[k] + \sum_{m=1}^M \sum_{l=1}^{N_m} c_{l,m} k^l z_m^k
+        \) där \(
+            z_1, z_2, \dots, z_m
+        \) är nollställen till \(
+            Q
+        \) och \(
+            c_{l,m}
+        \), \(
+            M
+        \) och \(
+            N_m 
+        \) är godtyckliga tal.
+    \end{påst}
+
+    \begin{sats}[Differensekvationer och stabilitet]
+        Som en följd av det är differensekvationen \(
+            Q(E)y[k] = P(E)x[k]
+        \) där \(
+            k \geq 0
+        \) och \(
+            y[k]
+        \) kända då stabil, d.v.s.\ \(
+            y[k] \xrightarrow{k\to \infty} 0
+        \) när \(
+            x[k] \xrightarrow{k \to \infty} 0
+        \) om och endast om \(
+            Q(z) = 0    
+        \) saknar lösning med \(
+            \abs{z} \geq 1
+        \).
+    \end{sats}
+    
+\end{ex}
+
+\begin{sats}[Stabilitet och väldefinierade system]
+    Ett diskret system är stabilt \(
+        \iff 
+    \) \(
+        H(z)
+    \) väldefinierat för \(
+        \abs{z} \geq 1
+    \). Det är samma sak som att \(
+        H
+    \) saknar poler i \(
+        \abs{z} \geq 1
+    \).
+\end{sats}
+
+\subsection{Poler till överföringsfunktioner}
+\begin{defn}[Poler]
+    Låt \(
+        H(z) = \frac{P(z)}{Q(z)} 
+    \) vara en rationell funktion på reducerad form, d.v.s.\ \(
+        P
+    \) och \(
+        Q
+    \) saknar gemensamma nollställen. 
+
+    \(
+        z_0 \in \compn
+    \) sägs vara en pol till \(
+        H
+    \) om \(
+        Q(z_0) = 0
+    \).
+\end{defn}
+
+\begin{ex}
+    Låt \(
+        P(z) = b_1z + b_0
+    \) och \(
+        Q(z) = z^2+a_1z+a_0
+    \). Anta också att \(
+        Q(\frac{-b_0}{b_1}) \neq 0
+    \) och att \(
+        a_0 \neq \frac{a_1^2}{4} 
+    \) vilket ser till att \(
+        P
+    \) och \(
+        Q
+    \) inte är noll samtidigt och att \(
+        z_- \neq z_+
+    \).
+
+    Då är \(
+        H(z) = \frac{P(z)}{Q(z)} = \frac{b_1z+b_0}{(z-z_+)(z-z_-)} 
+    \) där polerna till \(
+        H
+    \) är \(
+        z_- 
+    \) och \(
+        z_+
+    \). Vad är då \(
+        h
+    \), d.v.s.\ vad är \(
+        z^{-1}(H)
+    \)?
+
+    Vi skriver \(
+        H(z) = \frac{b_1(z-z_+) + b_1 z + b_0}{(z-z_+)(z-z_-)}
+             = \frac{b_1}{z-z_-} + \frac{b_1z_+  +b_0}{(z-z_+)(z-z_-)}
+             = \{\text{Partialbråksuppdelning}\}
+    \) så att \(
+        h[k] = \qty(\frac{b_1z_-+b_0}{z_--z_+} z_-^{k-1} + \frac{b_1z_++b_0}{z_+-z_-} z_+^{k-1}) u[k-1]
+    \).
+
+    Vi får alltså att zerostate-lösningen för \(
+        y[k +2] + a_1y[k+1]+a_0y[k] = b_1x[k+1]+b_0x[k]
+    \) där \(
+        y[-2] = y[-1] = 0
+    \) ges av \(
+        y = h*x
+    \) där \(
+        h
+    \) är som ovan.
+
+    Stabilitet \(
+        \iff \abs{z_+}, \abs{z_-} < 1
+    \).
+\end{ex}
+
+\end{document}

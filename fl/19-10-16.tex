@@ -1,0 +1,53 @@
+\documentclass[a4paper]{article}
+\usepackage{../flpack}
+
+\begin{document}
+
+\providecommand\fname{}
+\renewcommand\fname{19-10-16}
+
+\subsection{Diskreta LTI-system}
+De kan beskrivas med differensekvationer.
+\(
+    y[n] + \sum_{k=1}^N a_k y[n-k] = \sum_{k=0}^M b_k x[n-k]
+\) vilket om man z-transformerar ger \(
+    Y(z) + \sum_{k=1}^N a_k z^{-k} Y(z) = \sum_{k=0}^M b_k z^{-k} X(z)
+        = Y(z) (1 + \sum_{k=1}^N a_k z^{-k}) = X(z) \sum_{k=0}^M b_k z^{-k}
+\) vilket vi kallar \(
+    Y(z) \cdot A(z) = X(z) \cdot B(z)
+\). Det ger \(
+    Y(z) = \frac{\sum_{k=0}^M b_k z^{-k}}{1 + \sum_{k=1}^N a_k z^{-k}} \cdot X(z)
+\) där vi kallar kvoten för \(
+    H(z) = \frac{A(z)}{B(z)} 
+\).
+
+\(
+    H(z) = \frac{B(z)}{A(z)} 
+\) är systemets överföringsfunktion vilket är en kvot mellan två polynom i \(
+    z^{-1}
+\). 
+
+En vanlig form hos z-transformen i våra tillämpningar är som en kvot mellan 
+polynom i \(
+    z^{-1}
+\) eller \(
+    z
+\), d.v.s.\ \(
+    H(z) = \frac{b_0 + b_1z^{-1} + \cdots + b_M z^{-M}}{a_0 + a_1 z^{-1} + \cdots + a_N z^{-N}} 
+\). 
+
+Om vi faktoriserar får vi \(
+    H(z) = b_0 \cdot \frac{\prod_{k=1}^M (1-c_k z^{-1})}{\prod_{k=1}^N (1-d_k z^{-1})} 
+\). \(
+    z = c_k
+\) ger nollställen (\(
+    \circ
+\)) och \(
+    z=d_k
+\) ger poler (\(
+    \times
+\)). Beskrivs grafiskt genom att rita dem med sina tecken i z-planet.
+
+
+
+\end{document}

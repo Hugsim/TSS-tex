@@ -1,0 +1,167 @@
+\documentclass[a4paper]{article}
+\usepackage{../flpack}
+
+\begin{document}
+
+\providecommand\fname{}
+\renewcommand\fname{19-10-17}
+
+\subsection{z-transformen för en generell sekvens}
+Låt \(
+    x[n]
+\) vara en diskret signal. Då är \(
+    X(z) = \sum_{n=-\infty}^\infty x[n]z^{-n}
+\). Vi vet att vi kan skriva \(
+    z = re^{\iO}
+\). Då är \(
+    X(z) = X(re^\iO) = \sum_{n=-\infty}^\infty x[n] {(re^{\iO})}^{-n}
+        = \sum_{n=-\infty}^\infty (x[n] r^{-n}) e^{\iO n}
+        = \text{DTFT} \{x[n] r^{-n}\}
+\). Det konvergerar om \(
+    \sum_{n=-\infty}^\infty \abs{x[n] r^{-n}} < \infty
+\), d.v.s.\ om det är absolutsummerbart. Notera att konvergensen bara beror 
+på \(
+    \abs{z} = r
+\) och \(
+    x[n]
+\). De värden på \(
+    z
+\) för vilka \(
+    X(z)
+\) konvergerar kallas för \enquote{konvergensområde} (ROC).
+
+För en kausal signal gäller att om \(
+    \sum_{n=0}^\infty \abs{x[n] r^{-n}} < \infty
+\) för något \(
+    r = r_0
+\) måste den även konvergera för \(
+    r > r_0
+\). Konvergensområdet är alltså alla tal utanför en viss cirkel i det 
+komplexa talplanet.
+
+\subsubsection{Några egenskaper för konvergensområdet}
+\begin{itemize}
+    \item Inga poler får ligga i ROC
+    \item Om DTFT existerar för signalen ligger enhetscirkeln i ROC (\(
+              r=1
+          \))
+    \item Om \(
+              x[n]
+          \) är kausal och dess \(
+              X(z)
+          \) har poler svarar det minsta värdet på \(
+              r
+          \) för vilket \(
+              X(z)
+          \) konvergerar mot det största beloppet av \(
+              X(z)
+          \):s poler.
+\end{itemize}
+
+\subsection{Digitala filter}
+Ett filter går att realisera med en differensekvation som beskrivs
+av en kvot \(
+    \frac{Y(z)}{X(z)} = H(z) 
+        = \frac{b_0 + b_1 z^{-1} + \cdots + b_M z^{-M}}{1 + a_1z^{-1} + \cdots + a_N z^{-N}} 
+\).
+
+\subsubsection{Några slags filter}
+\begin{itemize}
+    \item FIR (Finite Impulse Response)
+        \begin{itemize}
+            \item Ändligt långt impulssvar (längd \(
+                M < \infty
+            \))
+            \item \(
+                a_1
+            \), \(
+                a_2
+            \), \(
+                \dots
+            \), \(
+                a_n = 0
+            \) 
+            \item Kan ges linjär fas
+            \item Alltid stabila (\(
+                M < \infty
+            \), \(
+                b_n < \infty
+            \))
+            \item Icke-rekursivt
+        \end{itemize}
+    \item IIR (Infinite Impulse Response)
+        \begin{itemize}
+            \item Oändligt långt impulssvar
+            \item Rekursivt (Några \(
+                a_k \neq 0
+            \), \(
+                k = 1,2,\dots,N
+            \))
+            \item Kan göras instabila
+            \item För jämförbar amplitudkaraktäristik har lägre filterordning 
+                      än ett FIR-filter (snabbare att räkna ut och modellera
+                      eftersom det har färre multiplikationer att utföra)
+        \end{itemize}
+\end{itemize}
+
+\subsection{Diskret system (filter)}
+Låt \(
+    H(z)
+\) vara en överföringsfunktion till något system. Då är \(
+    \eval{H(z)}_{z = e^{\iO}} = H(e^\iO)
+\) dess frekvenssvar. Det är också bara \(
+    H(z)
+\) på enhetscirkeln och \(
+    H(e^\iO)
+\) är ju bara DTFT som är kontinuerlig i \(
+    \Omega
+\) och periodisk med period \(
+    2\pi
+\). 
+
+Då är \(
+    \abs{H(e^\iO)} 
+        = b_0 \cdot \frac{\prod_{k=1}^M \abs{(e^\iO - c_k)} }{\prod_{k=1}^N \abs{(e^\iO - d_k)}} 
+\). 
+
+Låt \(
+    \phi = \arg\{e^\iO - d_k\}
+\). 
+
+\begin{ex}
+    Vi har ett FIR-filter som beskrivs av differensekvationen \(
+        y[n] = x[n] + x[n-2]
+    \).
+
+    z-transformen ger \(
+        Y(z) = X(z) z^{-2} + X(z) = X(z) (1+z^{-2})
+    \) och därmed är \(
+        H(z) = \frac{Y(z)}{X(z)} = 1 + z^{-2} = \frac{z^2+1}{z^2}  
+    \). Nollställen här är de \(
+        z
+    \) som uppfyller \(
+        z^2 + 1 = 0
+    \), d.v.s.\ \(
+        z = \pm i = e^{\pm i \frac{\pi}{2} }
+    \). Polerna är \(
+        z^2 = 0
+    \).
+
+    Frekvenssvaret fås av att sätta \(
+        z
+    \) i z-transformen till \(
+        e^\iO
+    \). Då får vi \(
+        H(e^\iO) = 1 + e^{-2\iO}
+            = e^{-\iO}(e^\iO + e^{-\iO})
+            = 2 e^{-\iO} \cos \Omega
+    \).
+
+    \(
+        \abs{H(e^\iO)}
+    \) är då \(
+        2 \abs{\cos \Omega}
+    \).
+\end{ex}
+
+\end{document}
